@@ -1,4 +1,4 @@
-package com.myPerc.algorithms.perceptron;
+package com.myPerceptron.perceptron;
 
 import java.util.Random;
 

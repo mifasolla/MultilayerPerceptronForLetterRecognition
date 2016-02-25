@@ -1,4 +1,4 @@
-package com.myPerc.algorithms.data;
+package com.myPerceptron.data;
 
 /**
  * Created by Vika on 15.02.2016.

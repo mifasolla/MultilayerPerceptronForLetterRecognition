@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.canvas.Canvas?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.RadioButton?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.text.Font?>
+
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" stylesheets="@css/openingLayout.css" xmlns="http://javafx.com/javafx/8.0.65" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.myPerceptron.data.visualization.OpeningLayoutController">
+   <top>
+      <MenuBar prefHeight="25.0" prefWidth="600.0" BorderPane.alignment="CENTER">
+        <menus>
+          <Menu mnemonicParsing="false" text="Perceptron">
+            <items>
+              <MenuItem mnemonicParsing="false" text="New" />
+                  <MenuItem mnemonicParsing="false" text="Open..." />
+                  <MenuItem mnemonicParsing="false" text="Save" />
+                  <MenuItem mnemonicParsing="false" text="Save as..." />
+                  <MenuItem mnemonicParsing="false" text="Exit" />
+            </items>
+          </Menu>
+          <Menu mnemonicParsing="false" text="Help">
+            <items>
+              <MenuItem mnemonicParsing="false" text="About" />
+            </items>
+          </Menu>
+        </menus>
+      </MenuBar>
+   </top>
+   <right>
+      <AnchorPane prefHeight="375.0" prefWidth="337.0" style="-fx-background-color: #ffffff;" BorderPane.alignment="CENTER">
+         <children>
+            <Canvas fx:id="canvas" height="328.0" layoutX="26.0" layoutY="14.0" styleClass="canvas" width="295.0" />
+         </children>
+      </AnchorPane>
+   </right>
+   <left>
+      <AnchorPane prefHeight="375.0" prefWidth="267.0" style="-fx-background-color: #ffffff;" BorderPane.alignment="CENTER">
+         <children>
+            <Button fx:id="clear" layoutX="143.0" layoutY="214.0" mnemonicParsing="false" onAction="#onClearButtonClick" prefHeight="27.0" prefWidth="107.0" text="Clear">
+               <font>
+                  <Font name="Calibri" size="14.0" />
+               </font>
+            </Button>
+            <Button fx:id="saveAPicture" layoutX="144.0" layoutY="166.0" mnemonicParsing="false" onAction="#onSaveAPictureButtonClick" text="Save a picture">
+               <font>
+                  <Font size="14.0" />
+               </font>
+            </Button>
+            <Label layoutX="153.0" layoutY="71.0" prefHeight="38.0" prefWidth="100.0" style="-fx-background-color: #ffffff;" text="Choose a letter:" textOverrun="CLIP">
+               <font>
+                  <Font name="Calibri" size="14.0" />
+               </font>
+            </Label>
+            <RadioButton fx:id="letterV" layoutX="149.0" layoutY="109.0" mnemonicParsing="false" text="V">
+               <font>
+                  <Font size="14.0" />
+               </font>
+            </RadioButton>
+            <RadioButton fx:id="letterZ" layoutX="199.0" layoutY="109.0" mnemonicParsing="false" text="Z">
+               <font>
+                  <Font size="14.0" />
+               </font>
+            </RadioButton>
+         </children>
+      </AnchorPane>
+   </left>
+</BorderPane>

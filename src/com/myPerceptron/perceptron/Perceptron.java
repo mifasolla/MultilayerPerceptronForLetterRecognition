@@ -1,4 +1,4 @@
-package com.myPerc.algorithms.perceptron;
+package com.myPerceptron.perceptron;
 
 import java.io.BufferedReader;
 import java.io.IOException;
