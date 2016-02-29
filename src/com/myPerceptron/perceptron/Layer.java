@@ -9,46 +9,45 @@ public class Layer {
 
     private int neuronsCount;
     private int layerNum;
-    double [][] weights;
-    private double [] neuronOutputs;
+    private double[][] weights;
+    private double[] neuronOutputs;
     final double A = 1.7159;
     final double B = 0.66;
 
 
-
-    public Layer(int layerNum, int neuronsCount, double [] previousNeuronsOutputs) {
+    public Layer(int layerNum, int neuronsCount, int previousLayerNeuronsCount) {
 
         this.layerNum = layerNum;
         this.neuronsCount = neuronsCount;
 
-        int previousLayerNeuronsCount = previousNeuronsOutputs.length;
+        // int previousLayerNeuronsCount = previousNeuronsOutputs.length;
 
-        weights = new double[neuronsCount][previousLayerNeuronsCount ];
+        weights = new double[neuronsCount][previousLayerNeuronsCount];
         setWeights();
 
-        neuronOutputs = calculateNeuronOutputs(previousNeuronsOutputs);
+        //neuronOutputs = calculateNeuronOutputs(previousNeuronsOutputs);
 
     }
 
-    public int getNeuronsCount(){
+    public int getNeuronsCount() {
         return neuronsCount;
     }
 
-    public int getLayerNum(){
+    public int getLayerNum() {
         return layerNum;
     }
 
     private void setWeights() {
         Random rand = new Random();
-        for (int i = 0; i < weights.length; i++){
+        for (int i = 0; i < weights.length; i++) {
             for (int j = 0; j < weights[i].length; j++) {
                 weights[i][j] = rand.nextDouble();
             }
         }
     }
 
-    private double [] calculateNeuronOutputs(double [] inputVector) {
-        double [] outputVector = new double[neuronsCount + 1];
+    private double[] calculateNeuronOutputs(double[] inputVector) {
+        double[] outputVector = new double[neuronsCount + 1];
         outputVector[0] = 1.0;
         for (int i = 0; i < weights.length; i++) {
             double v = 0;
@@ -56,16 +55,19 @@ public class Layer {
                 v += inputVector[j] * weights[i][j];
             }
             // output = activation function of v
-            outputVector[i+1] = A * Math.tanh(B*v);
+            outputVector[i + 1] = A * Math.tanh(B * v);
         }
 
         return outputVector;
     }
 
-    public double [] getNeuronOutputs() {
+    public double[] getNeuronOutputs() {
         return neuronOutputs;
     }
 
+    public void setWeight(int from, int to) {
+
+    }
 
 
 }

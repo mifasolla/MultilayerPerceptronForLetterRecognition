@@ -16,6 +16,7 @@ public class MainApp extends Application {
     private Stage primaryStage;
     private BorderPane openingLayout;
 
+
     public static void main(String[] args) {
         launch(args);
     }
@@ -27,8 +28,8 @@ public class MainApp extends Application {
 
         initOpeningLayout();
 
-    }
 
+    }
 
 
     public void initOpeningLayout() {
@@ -45,6 +46,7 @@ public class MainApp extends Application {
             // Give the controller access to the main app.
             OpeningLayoutController controller = loader.getController();
             controller.setMainApp(this);
+
 
             primaryStage.show();
         } catch (IOException e) {

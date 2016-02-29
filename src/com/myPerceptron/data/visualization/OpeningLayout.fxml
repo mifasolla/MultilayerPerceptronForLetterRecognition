@@ -100,6 +100,8 @@
                               <Font name="Calibri" size="14.0" />
                            </font>
                         </Label>
+                        <Button layoutX="90.0" layoutY="245.0" mnemonicParsing="false" onAction="#onShowPictureGridClick" text="Show picture grid" />
+                        <Button layoutX="44.0" layoutY="290.0" mnemonicParsing="false" onAction="#onConvertImagesToTrainingSampleClick" text="Convert images to training sample" />
                      </children>
                   </AnchorPane>
             </content>

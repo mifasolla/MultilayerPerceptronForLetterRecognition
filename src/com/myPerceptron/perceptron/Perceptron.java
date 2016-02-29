@@ -14,7 +14,7 @@ public class Perceptron {
     Layer[] layers;
 
 
-    public Perceptron(double [] inputSignal) throws IOException {
+    public Perceptron(int inputSignalLength) throws IOException {
 
         //  1. write to file input com.myPerc.algorithms.data from images
 
@@ -32,7 +32,8 @@ public class Perceptron {
         System.out.println("Layers count = ");
         layersCount = readNumber();
         layers = new Layer[layersCount];
-        createLayers(inputSignal);
+        createLayers(inputSignalLength);
+        System.out.println("Perceptron is successfully created!");
 
 
     }
@@ -48,32 +49,31 @@ public class Perceptron {
         return number;
     }
 
-    private void createLayers(double [] inputSignal) throws IOException {
+    private void createLayers(int inputSignalLength) throws IOException {
         int neuronsCount;
 
         for (int i = 0; i < layersCount; i++) {
-            System.out.println("Enter neurons count in the " + i + 1 + " layer: ");
+            System.out.println("Enter neurons count in the " + (i + 1) + " layer: ");
             neuronsCount = readNumber();
             if (i == 0) {
-               layers[i] = new Layer(i + 1, neuronsCount, inputSignal);
+                layers[i] = new Layer(i + 1, neuronsCount, inputSignalLength);
             } else {
-                layers[i] = new Layer(i + 1, neuronsCount, layers[i - 1].getNeuronOutputs());
+                layers[i] = new Layer(i + 1, neuronsCount, layers[i - 1].getNeuronsCount());
             }
-
         }
     }
 
     private double[] transformListToDoubleArray(ArrayList<Double> arrayList) {
-        double [] array = new double[arrayList.size()];
+        double[] array = new double[arrayList.size()];
 
-        for(int i = 0; i < arrayList.size(); i++)
+        for (int i = 0; i < arrayList.size(); i++)
             array[i] = arrayList.get(i).doubleValue();
 
         return array;
     }
 
     public int getLayersCount() {
-        return  layersCount;
+        return layersCount;
     }
 
     public Layer getLayers(int layerNumber) {

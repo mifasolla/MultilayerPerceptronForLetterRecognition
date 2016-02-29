@@ -1,6 +1,7 @@
 package com.myPerceptron.data.visualization;
 
 import com.myPerceptron.MainApp;
+import com.myPerceptron.algorithms.TrainingSample;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -9,6 +10,7 @@ import javafx.scene.SnapshotParameters;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.*;
+import javafx.scene.image.PixelReader;
 import javafx.scene.image.WritableImage;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
@@ -47,7 +49,10 @@ public class OpeningLayoutController {
     private GraphicsContext gc;
     private MainApp mainApp;
 
-    ToggleGroup radioButtonsGroup;
+    private ToggleGroup radioButtonsGroup;
+    private File imagesDir;
+
+    private TrainingSample ts;
 
     public void setMainApp(MainApp mainApp) {
         this.mainApp = mainApp;
@@ -61,7 +66,6 @@ public class OpeningLayoutController {
         radioButtonsGroup = new ToggleGroup();
         letterV.setToggleGroup(radioButtonsGroup);
         letterZ.setToggleGroup(radioButtonsGroup);
-
 
         drawCanvasBorder();
 
@@ -90,6 +94,7 @@ public class OpeningLayoutController {
     @FXML
     private void onSaveAPictureButtonClick() {
         try {
+
             WritableImage snapshot = getPicture();
 
             File imagesDir = createImagesDir();
@@ -105,7 +110,9 @@ public class OpeningLayoutController {
 
                 File output = createPictureFile(imagesDir, prefix, pictureNumber);
                 ImageIO.write(SwingFXUtils.fromFXImage(snapshot, null), "png", output);
+
                 radioButtonsGroup.selectToggle(null);
+
             } else {
                 showNoLetterSelectedAlert();
             }
@@ -113,6 +120,44 @@ public class OpeningLayoutController {
             //ex.printStackTrace();
             Logger.getLogger(OpeningLayoutController.class.getName()).log(Level.SEVERE, null, ex);
         }
+    }
+
+    @FXML
+    private void onShowPictureGridClick() {
+        Rectangle2D letterArea = getLetterBorders(getPicture());
+
+        int xSegmentLength = (int) letterArea.getWidth() / 10;
+        int ySegmentLength = (int) letterArea.getHeight() / 10;
+        int xMod10 = (int) letterArea.getWidth() % 10;
+        int yMod10 = (int) letterArea.getHeight() % 10;
+        double x = letterArea.getMinX();
+        double y = letterArea.getMinY();
+
+
+        for (int i = 0; i < 10; i++) {
+            for (int j = 0; j < 10; j++) {
+                gc.setStroke(Color.YELLOW);
+                gc.strokeRect(x, y, xSegmentLength, ySegmentLength);
+                y += ySegmentLength;
+                if (j + 1 == 9) {
+                    ySegmentLength += yMod10;
+                }
+            }
+            y = letterArea.getMinY();
+            ySegmentLength -= yMod10;
+            x += xSegmentLength;
+            if (i + 1 == 9) {
+                xSegmentLength += xMod10;
+            }
+        }
+    }
+
+    @FXML
+    private void onConvertImagesToTrainingSampleClick() throws IOException {
+
+        imagesDir = new File(".\\src\\com\\myPerceptron\\data\\images");
+        ts = new TrainingSample(imagesDir);
+
     }
 
     @FXML
@@ -165,6 +210,42 @@ public class OpeningLayoutController {
         alert.setHeaderText("No letter selected!");
         alert.setContentText("Please specify the letter before saving.");
         alert.showAndWait();
+    }
+
+    private Rectangle2D getLetterBorders(WritableImage image) {
+        int left = Integer.MAX_VALUE;
+        int right = Integer.MIN_VALUE;
+        int top = Integer.MAX_VALUE;
+        int bottom = Integer.MIN_VALUE;
+
+        double width = image.getWidth();
+        double height = image.getHeight();
+
+        PixelReader pixels = image.getPixelReader();
+
+        for (int i = 0; i < width; i++) {
+            for (int j = 0; j < height; j++) {
+
+                int rgb = pixels.getArgb(i, j);
+                double b = ((rgb) & 0xFF);
+                double g = ((rgb >> 8) & 0xFF);
+                double r = ((rgb >> 16) & 0xFF);
+                double a = ((rgb >> 24) & 0xFF);
+
+                if (r == 0 && g == 0 && b == 0) { // 0xAA000000 - black
+                    if (left > i) left = i;
+                    if (right < i) right = i;
+                    if (top > j) top = j;
+                    if (bottom < j) bottom = j;
+                }
+            }
+        }
+
+        return new Rectangle2D(left + 1, top + 1, right - left + 3, bottom - top + 3);
+    }
+
+    public File getImagesDir() {
+        return imagesDir;
     }
 
 }
