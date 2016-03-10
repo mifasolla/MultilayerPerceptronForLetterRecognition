@@ -2,11 +2,15 @@ package com.myPerceptron; /**
  * Created by Vika on 23.02.2016.
  */
 
+import com.myPerceptron.data.visualization.NewPerceptronCreationLayoutController;
 import com.myPerceptron.data.visualization.OpeningLayoutController;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.GridPane;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 import java.io.IOException;
@@ -49,6 +53,33 @@ public class MainApp extends Application {
 
 
             primaryStage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
+    public Stage getPrimaryStage () {
+        return primaryStage;
+    }
+
+    public void showNewPerceptronCreationLayout() {
+        try {
+            FXMLLoader loader = new FXMLLoader();
+            loader.setLocation(MainApp.class.getResource("/com/myPerceptron/data/visualization/NewPerceptronCreationLayout.fxml"));
+            AnchorPane perceptronCreationLayout = (AnchorPane) loader.load();
+
+            Stage dialogStage = new Stage();
+            dialogStage.setTitle("Creating new perceptron");
+            dialogStage.initModality(Modality.WINDOW_MODAL);
+            dialogStage.initOwner(primaryStage);
+            Scene scene = new Scene(perceptronCreationLayout);
+            dialogStage.setScene(scene);
+
+            NewPerceptronCreationLayoutController controller = loader.getController();
+            controller.setDialogStage(dialogStage);
+
+            dialogStage.showAndWait();
+
         } catch (IOException e) {
             e.printStackTrace();
         }

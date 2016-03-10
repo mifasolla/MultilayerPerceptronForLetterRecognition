@@ -2,10 +2,13 @@ package com.myPerceptron.data.visualization;
 
 import com.myPerceptron.MainApp;
 import com.myPerceptron.algorithms.TrainingSample;
+import com.myPerceptron.perceptron.Perceptron;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.geometry.Rectangle2D;
+import javafx.scene.Scene;
 import javafx.scene.SnapshotParameters;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
@@ -13,12 +16,16 @@ import javafx.scene.control.*;
 import javafx.scene.image.PixelReader;
 import javafx.scene.image.WritableImage;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
 
 import javax.imageio.ImageIO;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
+import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -114,7 +121,7 @@ public class OpeningLayoutController {
                 radioButtonsGroup.selectToggle(null);
 
             } else {
-                showNoLetterSelectedAlert();
+                showAlert("No letter selected!", "Please specify the letter before saving.", Alert.AlertType.WARNING);
             }
         } catch (IOException ex) {
             //ex.printStackTrace();
@@ -165,6 +172,19 @@ public class OpeningLayoutController {
         System.exit(0);
     }
 
+    @FXML
+    private void handleNew() {
+        //mainApp.showNewPerceptronCreationLayout();
+
+        int layerCount = showIntegerInputDialog("Layer count", "Please enter the layer count: ");
+        int [] neuronCount = new int[layerCount];
+            for (int i = 0; i < layerCount; i++) {
+                neuronCount[i] = showIntegerInputDialog("Neurons count", "Neurons count at the " + (i+1) + " level");
+            }
+
+        showNewPerceptronCreationLayout(neuronCount);
+    }
+
     private WritableImage getPicture() {
         Rectangle2D viewport = new Rectangle2D(
                 canvas.getLayoutX() + 2, canvas.getLayoutY() + 2, canvas.getWidth() - 4, canvas.getHeight() - 4);
@@ -205,12 +225,6 @@ public class OpeningLayoutController {
         return new File(imagesDir, picturePrefix + pictureNumber + ").png");
     }
 
-    private void showNoLetterSelectedAlert() {
-        Alert alert = new Alert(Alert.AlertType.WARNING);
-        alert.setHeaderText("No letter selected!");
-        alert.setContentText("Please specify the letter before saving.");
-        alert.showAndWait();
-    }
 
     private Rectangle2D getLetterBorders(WritableImage image) {
         int left = Integer.MAX_VALUE;
@@ -248,4 +262,67 @@ public class OpeningLayoutController {
         return imagesDir;
     }
 
+
+    private void showAlert(String title, String contentText, Alert.AlertType type) {
+        Alert alert = new Alert(type);
+        alert.setTitle(title);
+        alert.setHeaderText(title);
+        alert.setContentText(contentText);
+        alert.showAndWait();
+    }
+
+    private int showIntegerInputDialog(String title, String contentText) {
+        TextInputDialog dialog = new TextInputDialog();
+        dialog.setTitle(title);
+        dialog.setHeaderText("Data input dialog");
+        dialog.setContentText(contentText);
+        Optional<String> result = dialog.showAndWait();
+        int input;
+        if (result.isPresent()) {
+            try {
+                input = Integer.parseInt(result.get());
+                if(input > 0)
+                    return input;
+                else {
+                    showAlert("Unacceptable value!","Please, enter a positive non-zero number!", Alert.AlertType.WARNING);
+                    return showIntegerInputDialog(title, contentText);
+                }
+            } catch (NumberFormatException e) {
+                showAlert("Not a number!", "Please, enter an integer value", Alert.AlertType.WARNING);
+                return showIntegerInputDialog(title, contentText);
+            }
+        } else {
+            showAlert("Null", "Please, enter a number", Alert.AlertType.WARNING);
+            return showIntegerInputDialog(title, contentText);
+        }
+    }
+
+    public void showNewPerceptronCreationLayout(int[] neuronCount) {
+        try {
+            FXMLLoader loader = new FXMLLoader();
+            loader.setLocation(MainApp.class.getResource("/com/myPerceptron/data/visualization/NewPerceptronCreationLayout.fxml"));
+            AnchorPane perceptronCreationLayout = (AnchorPane) loader.load();
+
+            Stage dialogStage = new Stage();
+            dialogStage.setTitle("Creating new perceptron");
+            dialogStage.initModality(Modality.WINDOW_MODAL);
+            dialogStage.initOwner(mainApp.getPrimaryStage());
+            Scene scene = new Scene(perceptronCreationLayout);
+            dialogStage.setScene(scene);
+
+            NewPerceptronCreationLayoutController controller = loader.getController();
+            controller.setDialogStage(dialogStage);
+
+            Label [] labels = new Label[neuronCount.length];
+            for (int i = 0; i < labels.length; i++) {
+                labels[i] = new Label(Integer.toString(neuronCount[i]));
+            }
+
+            dialogStage.showAndWait();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
 }
