@@ -2,14 +2,13 @@ package com.myPerceptron; /**
  * Created by Vika on 23.02.2016.
  */
 
-import com.myPerceptron.data.visualization.NewPerceptronCreationLayoutController;
-import com.myPerceptron.data.visualization.OpeningLayoutController;
+import com.myPerceptron.visualization.NewPerceptronCreationLayoutController;
+import com.myPerceptron.visualization.OpeningLayoutController;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.GridPane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
@@ -40,7 +39,7 @@ public class MainApp extends Application {
         try {
             // Load root layout from fxml file.
             FXMLLoader loader = new FXMLLoader();
-            loader.setLocation(MainApp.class.getResource("/com/myPerceptron/data/visualization/OpeningLayout.fxml"));
+            loader.setLocation(MainApp.class.getResource("/com/myPerceptron/visualization/OpeningLayout.fxml"));
             openingLayout = (BorderPane) loader.load();
 
             // Show the scene containing the root layout.
@@ -65,7 +64,7 @@ public class MainApp extends Application {
     public void showNewPerceptronCreationLayout() {
         try {
             FXMLLoader loader = new FXMLLoader();
-            loader.setLocation(MainApp.class.getResource("/com/myPerceptron/data/visualization/NewPerceptronCreationLayout.fxml"));
+            loader.setLocation(MainApp.class.getResource("/com/myPerceptron/visualization/NewPerceptronCreationLayout.fxml"));
             AnchorPane perceptronCreationLayout = (AnchorPane) loader.load();
 
             Stage dialogStage = new Stage();

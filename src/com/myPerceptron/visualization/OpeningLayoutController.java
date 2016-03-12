@@ -1,8 +1,10 @@
-package com.myPerceptron.data.visualization;
+package com.myPerceptron.visualization;
 
 import com.myPerceptron.MainApp;
 import com.myPerceptron.algorithms.TrainingSample;
-import com.myPerceptron.perceptron.Perceptron;
+import com.myPerceptron.utils.AlertUtils;
+import com.myPerceptron.utils.FileUtils;
+import com.myPerceptron.utils.ImageUtils;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -68,7 +70,6 @@ public class OpeningLayoutController {
 
     @FXML
     private void initialize() {
-        System.out.println("init in opening controller");
         gc = canvas.getGraphicsContext2D();
         radioButtonsGroup = new ToggleGroup();
         letterV.setToggleGroup(radioButtonsGroup);
@@ -104,9 +105,9 @@ public class OpeningLayoutController {
 
             WritableImage snapshot = getPicture();
 
-            File imagesDir = createImagesDir();
-            FilenameFilter letterVFilter = createFileNameFilter("V(");
-            FilenameFilter letterZFilter = createFileNameFilter("Z(");
+            File imagesDir = FileUtils.createImagesDir();
+            FilenameFilter letterVFilter = FileUtils.createFileNameFilter("V(");
+            FilenameFilter letterZFilter = FileUtils.createFileNameFilter("Z(");
             int pictureVCount = imagesDir.list(letterVFilter).length;
             int pictureZCount = imagesDir.list(letterZFilter).length;
 
@@ -115,23 +116,22 @@ public class OpeningLayoutController {
                 String prefix = selected == letterV ? "V(" : "Z(";
                 int pictureNumber = selected == letterV ? ++pictureVCount : ++pictureZCount;
 
-                File output = createPictureFile(imagesDir, prefix, pictureNumber);
+                File output = FileUtils.createPictureFile(imagesDir, prefix, pictureNumber);
                 ImageIO.write(SwingFXUtils.fromFXImage(snapshot, null), "png", output);
 
                 radioButtonsGroup.selectToggle(null);
 
             } else {
-                showAlert("No letter selected!", "Please specify the letter before saving.", Alert.AlertType.WARNING);
+                AlertUtils.showAlert("No letter selected!", "Please specify the letter before saving.", Alert.AlertType.WARNING);
             }
         } catch (IOException ex) {
-            //ex.printStackTrace();
             Logger.getLogger(OpeningLayoutController.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
     @FXML
     private void onShowPictureGridClick() {
-        Rectangle2D letterArea = getLetterBorders(getPicture());
+        Rectangle2D letterArea = ImageUtils.getLetterBorders(getPicture());
 
         int xSegmentLength = (int) letterArea.getWidth() / 10;
         int ySegmentLength = (int) letterArea.getHeight() / 10;
@@ -174,15 +174,13 @@ public class OpeningLayoutController {
 
     @FXML
     private void handleNew() {
-        //mainApp.showNewPerceptronCreationLayout();
-
-        int layerCount = showIntegerInputDialog("Layer count", "Please enter the layer count: ");
+        /*int layerCount = AlertUtils.showIntegerInputDialog("Layer count", "Please enter the layer count: ");
         int [] neuronCount = new int[layerCount];
             for (int i = 0; i < layerCount; i++) {
-                neuronCount[i] = showIntegerInputDialog("Neurons count", "Neurons count at the " + (i+1) + " level");
+                neuronCount[i] = AlertUtils.showIntegerInputDialog("Neurons count", "Neurons count at the " + (i+1) + " level");
             }
-
-        showNewPerceptronCreationLayout(neuronCount);
+*/
+        showNewPerceptronCreationLayout();
     }
 
     private WritableImage getPicture() {
@@ -195,112 +193,14 @@ public class OpeningLayoutController {
         return snapshot;
     }
 
-    private File createImagesDir() {
-        File imagesDir = new File(".\\src\\com\\myPerceptron\\data\\images");
-        if (imagesDir.exists()) {
-            if (!imagesDir.isDirectory()) {
-                imagesDir.delete();
-                imagesDir.mkdir();
-            }
-        } else {
-            imagesDir.mkdir();
-        }
-
-        return imagesDir;
-    }
-
-    private FilenameFilter createFileNameFilter(final String filter) {
-        return new FilenameFilter() {
-            @Override
-            public boolean accept(File dir, String name) {
-                if (name != null) {
-                    if (name.contains(filter)) return true;
-                }
-                return false;
-            }
-        };
-    }
-
-    private File createPictureFile(File imagesDir, String picturePrefix, int pictureNumber) {
-        return new File(imagesDir, picturePrefix + pictureNumber + ").png");
-    }
-
-
-    private Rectangle2D getLetterBorders(WritableImage image) {
-        int left = Integer.MAX_VALUE;
-        int right = Integer.MIN_VALUE;
-        int top = Integer.MAX_VALUE;
-        int bottom = Integer.MIN_VALUE;
-
-        double width = image.getWidth();
-        double height = image.getHeight();
-
-        PixelReader pixels = image.getPixelReader();
-
-        for (int i = 0; i < width; i++) {
-            for (int j = 0; j < height; j++) {
-
-                int rgb = pixels.getArgb(i, j);
-                double b = ((rgb) & 0xFF);
-                double g = ((rgb >> 8) & 0xFF);
-                double r = ((rgb >> 16) & 0xFF);
-                double a = ((rgb >> 24) & 0xFF);
-
-                if (r == 0 && g == 0 && b == 0) { // 0xAA000000 - black
-                    if (left > i) left = i;
-                    if (right < i) right = i;
-                    if (top > j) top = j;
-                    if (bottom < j) bottom = j;
-                }
-            }
-        }
-
-        return new Rectangle2D(left + 1, top + 1, right - left + 3, bottom - top + 3);
-    }
-
     public File getImagesDir() {
         return imagesDir;
     }
 
-
-    private void showAlert(String title, String contentText, Alert.AlertType type) {
-        Alert alert = new Alert(type);
-        alert.setTitle(title);
-        alert.setHeaderText(title);
-        alert.setContentText(contentText);
-        alert.showAndWait();
-    }
-
-    private int showIntegerInputDialog(String title, String contentText) {
-        TextInputDialog dialog = new TextInputDialog();
-        dialog.setTitle(title);
-        dialog.setHeaderText("Data input dialog");
-        dialog.setContentText(contentText);
-        Optional<String> result = dialog.showAndWait();
-        int input;
-        if (result.isPresent()) {
-            try {
-                input = Integer.parseInt(result.get());
-                if(input > 0)
-                    return input;
-                else {
-                    showAlert("Unacceptable value!","Please, enter a positive non-zero number!", Alert.AlertType.WARNING);
-                    return showIntegerInputDialog(title, contentText);
-                }
-            } catch (NumberFormatException e) {
-                showAlert("Not a number!", "Please, enter an integer value", Alert.AlertType.WARNING);
-                return showIntegerInputDialog(title, contentText);
-            }
-        } else {
-            showAlert("Null", "Please, enter a number", Alert.AlertType.WARNING);
-            return showIntegerInputDialog(title, contentText);
-        }
-    }
-
-    public void showNewPerceptronCreationLayout(int[] neuronCount) {
+    public void showNewPerceptronCreationLayout() {
         try {
             FXMLLoader loader = new FXMLLoader();
-            loader.setLocation(MainApp.class.getResource("/com/myPerceptron/data/visualization/NewPerceptronCreationLayout.fxml"));
+            loader.setLocation(MainApp.class.getResource("/com/myPerceptron/visualization/NewPerceptronCreationLayout.fxml"));
             AnchorPane perceptronCreationLayout = (AnchorPane) loader.load();
 
             Stage dialogStage = new Stage();
@@ -313,10 +213,10 @@ public class OpeningLayoutController {
             NewPerceptronCreationLayoutController controller = loader.getController();
             controller.setDialogStage(dialogStage);
 
-            Label [] labels = new Label[neuronCount.length];
+           /* Label [] labels = new Label[neuronCount.length];
             for (int i = 0; i < labels.length; i++) {
                 labels[i] = new Label(Integer.toString(neuronCount[i]));
-            }
+            }*/
 
             dialogStage.showAndWait();
 

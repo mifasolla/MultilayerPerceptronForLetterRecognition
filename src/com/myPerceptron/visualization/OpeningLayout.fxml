@@ -15,7 +15,7 @@
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" style="-fx-background-color: #ffffff;" stylesheets="@css/openingLayout.css" xmlns="http://javafx.com/javafx/8.0.65" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.myPerceptron.data.visualization.OpeningLayoutController">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" style="-fx-background-color: #ffffff;" stylesheets="@css/openingLayout.css" xmlns="http://javafx.com/javafx/8.0.65" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.myPerceptron.visualization.OpeningLayoutController">
    <top>
       <MenuBar prefHeight="25.0" prefWidth="600.0" BorderPane.alignment="CENTER">
         <menus>
@@ -55,7 +55,7 @@
                               <Font name="Calibri" size="14.0" />
                            </font>
                         </Button>
-                        <Button fx:id="clear1" layoutX="96.0" layoutY="196.0" mnemonicParsing="false" onAction="#onClearButtonClick" prefHeight="27.0" prefWidth="107.0" text="Clear" AnchorPane.bottomAnchor="116.0" AnchorPane.leftAnchor="64.0" AnchorPane.rightAnchor="64.0" AnchorPane.topAnchor="199.0">
+                        <Button fx:id="clear1" layoutX="96.0" layoutY="196.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#onClearButtonClick" prefHeight="27.0" prefWidth="107.0" text="Clear" AnchorPane.bottomAnchor="116.0" AnchorPane.leftAnchor="64.0" AnchorPane.rightAnchor="64.0" AnchorPane.topAnchor="199.0">
                            <font>
                               <Font name="Calibri" size="14.0" />
                            </font>
