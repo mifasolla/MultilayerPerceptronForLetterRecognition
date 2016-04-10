@@ -2,14 +2,18 @@ package com.myPerceptron; /**
  * Created by Vika on 23.02.2016.
  */
 
-import com.myPerceptron.visualization.NewPerceptronCreationLayoutController;
+import com.myPerceptron.algorithms.BackPropagationAlgorithm;
+import com.myPerceptron.algorithms.TrainingSample;
+import com.myPerceptron.perceptron.Perceptron;
+import com.myPerceptron.utils.ImageUtils;
+import com.myPerceptron.utils.Matrix;
 import com.myPerceptron.visualization.OpeningLayoutController;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
-import javafx.scene.layout.AnchorPane;
+import javafx.scene.image.WritableImage;
 import javafx.scene.layout.BorderPane;
-import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 import java.io.IOException;
@@ -18,7 +22,8 @@ public class MainApp extends Application {
 
     private Stage primaryStage;
     private BorderPane openingLayout;
-
+    private TrainingSample ts;
+    private Perceptron perceptron;
 
     public static void main(String[] args) {
         launch(args);
@@ -30,10 +35,7 @@ public class MainApp extends Application {
         this.primaryStage.setTitle("Multilayer Perceptron");
 
         initOpeningLayout();
-
-
     }
-
 
     public void initOpeningLayout() {
         try {
@@ -57,31 +59,40 @@ public class MainApp extends Application {
         }
 
     }
-    public Stage getPrimaryStage () {
+
+    public Stage getPrimaryStage() {
         return primaryStage;
     }
 
-    public void showNewPerceptronCreationLayout() {
-        try {
-            FXMLLoader loader = new FXMLLoader();
-            loader.setLocation(MainApp.class.getResource("/com/myPerceptron/visualization/NewPerceptronCreationLayout.fxml"));
-            AnchorPane perceptronCreationLayout = (AnchorPane) loader.load();
+    public void setTrainingSample(TrainingSample ts) {
+        this.ts = ts;
+    }
 
-            Stage dialogStage = new Stage();
-            dialogStage.setTitle("Creating new perceptron");
-            dialogStage.initModality(Modality.WINDOW_MODAL);
-            dialogStage.initOwner(primaryStage);
-            Scene scene = new Scene(perceptronCreationLayout);
-            dialogStage.setScene(scene);
+    public void setPerceptron(Perceptron perceptron) {
+        this.perceptron = perceptron;
+    }
 
-            NewPerceptronCreationLayoutController controller = loader.getController();
-            controller.setDialogStage(dialogStage);
+    public void backPropagation() throws Exception {
+        new BackPropagationAlgorithm(perceptron, ts);
+    }
 
-            dialogStage.showAndWait();
+    public double solve(WritableImage image) throws Exception {
+        Rectangle2D imageBorders = ImageUtils.getLetterBorders(image);
 
-        } catch (IOException e) {
-            e.printStackTrace();
+        double[] inputArray = ImageUtils.getVectorFromImage(image, imageBorders);
+
+        Matrix inputVector = new Matrix(inputArray.length, 1);
+        inputVector.setVerticalVector(inputArray);
+
+        int layersCount = perceptron.getLayersCount();
+
+        for (int layer = 0; layer < layersCount; layer++) {
+            if (layer == 0) {
+                perceptron.getLayers(layer).calculateNeuronOutputs(inputVector);
+            } else {
+                perceptron.getLayers(layer).calculateNeuronOutputs(perceptron.getLayers(layer - 1).getNeuronOutputs());
+            }
         }
-
+        return perceptron.getLayers(layersCount - 1).getNeuronOutputs().getElement(0, 0);
     }
 }

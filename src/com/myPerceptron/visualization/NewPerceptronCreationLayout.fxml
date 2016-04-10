@@ -18,11 +18,13 @@
             <Font name="Calibri" size="14.0" />
          </font>
       </Button>
-      <TextField fx:id="perceptronStructure" cacheShape="false" layoutX="50.0" layoutY="87.0" nodeOrientation="LEFT_TO_RIGHT" prefHeight="27.0" prefWidth="200.0" text="100-" />
+      <TextField fx:id="perceptronStructure" cacheShape="false" layoutX="66.0" layoutY="87.0" nodeOrientation="LEFT_TO_RIGHT" prefHeight="27.0" prefWidth="196.0" />
       <Label layoutX="28.0" layoutY="52.0" text="Enter a perceptron structure:">
          <font>
             <Font name="Calibri" size="15.0" />
          </font>
       </Label>
+      <Label layoutX="40.0" layoutY="91.0" prefHeight="18.0" prefWidth="26.0" text="100-" />
+      <Label layoutX="262.0" layoutY="91.0" prefHeight="18.0" prefWidth="26.0" text="-1" />
    </children>
 </AnchorPane>

@@ -5,6 +5,7 @@ import com.myPerceptron.algorithms.TrainingSample;
 import com.myPerceptron.utils.AlertUtils;
 import com.myPerceptron.utils.FileUtils;
 import com.myPerceptron.utils.ImageUtils;
+import com.myPerceptron.utils.Matrix;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -15,7 +16,6 @@ import javafx.scene.SnapshotParameters;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.*;
-import javafx.scene.image.PixelReader;
 import javafx.scene.image.WritableImage;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
@@ -27,7 +27,6 @@ import javax.imageio.ImageIO;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
-import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -54,6 +53,15 @@ public class OpeningLayoutController {
     @FXML
     private TabPane tabPane;
 
+    @FXML
+    private Tab recognitionTab;
+
+    @FXML
+    private Tab trainingTab;
+
+    @FXML
+    private Tab learningTab;
+
 
     private GraphicsContext gc;
     private MainApp mainApp;
@@ -61,7 +69,6 @@ public class OpeningLayoutController {
     private ToggleGroup radioButtonsGroup;
     private File imagesDir;
 
-    private TrainingSample ts;
 
     public void setMainApp(MainApp mainApp) {
         this.mainApp = mainApp;
@@ -122,7 +129,7 @@ public class OpeningLayoutController {
                 radioButtonsGroup.selectToggle(null);
 
             } else {
-                AlertUtils.showAlert("No letter selected!", "Please specify the letter before saving.", Alert.AlertType.WARNING);
+                AlertUtils.showAlert("Please specify the letter before saving.", Alert.AlertType.WARNING);
             }
         } catch (IOException ex) {
             Logger.getLogger(OpeningLayoutController.class.getName()).log(Level.SEVERE, null, ex);
@@ -163,7 +170,7 @@ public class OpeningLayoutController {
     private void onConvertImagesToTrainingSampleClick() throws IOException {
 
         imagesDir = new File(".\\src\\com\\myPerceptron\\data\\images");
-        ts = new TrainingSample(imagesDir);
+        mainApp.setTrainingSample(new TrainingSample(imagesDir));
 
     }
 
@@ -174,13 +181,48 @@ public class OpeningLayoutController {
 
     @FXML
     private void handleNew() {
-        /*int layerCount = AlertUtils.showIntegerInputDialog("Layer count", "Please enter the layer count: ");
-        int [] neuronCount = new int[layerCount];
-            for (int i = 0; i < layerCount; i++) {
-                neuronCount[i] = AlertUtils.showIntegerInputDialog("Neurons count", "Neurons count at the " + (i+1) + " level");
-            }
-*/
+
         showNewPerceptronCreationLayout();
+        //toLearningTab();
+
+    }
+
+    @FXML
+    private void onLearnButtonClick() throws Exception {
+        mainApp.backPropagation();
+    }
+
+    @FXML
+    private void onTestMatrixClick() {
+        Matrix matrix = new Matrix(4, 2);
+
+        for (int i = 0; i < 4; i++) {
+            for (int j = 0; j < 2; j++) {
+                matrix.setElement(i, j, (i + 1) * (j + 1));
+            }
+        }
+
+        matrix.show();
+        double [] scalarVector = {10, 2};
+
+        matrix.multipleColumnsOnScalarVector(scalarVector);
+        matrix.show();
+    }
+
+    @FXML
+    private void onRecognitionButtonClick() throws Exception {
+
+        WritableImage snapshot = getPicture();
+
+        double result = mainApp.solve(snapshot);
+
+        AlertUtils.showAlert("Result = " + result, Alert.AlertType.INFORMATION);
+    }
+
+    private void toLearningTab() {
+        recognitionTab.setDisable(true);
+        trainingTab.setDisable(true);
+        tabPane.getSelectionModel().select(learningTab);
     }
 
     private WritableImage getPicture() {
@@ -193,36 +235,35 @@ public class OpeningLayoutController {
         return snapshot;
     }
 
-    public File getImagesDir() {
-        return imagesDir;
-    }
+    private void showNewPerceptronCreationLayout() {
 
-    public void showNewPerceptronCreationLayout() {
         try {
             FXMLLoader loader = new FXMLLoader();
             loader.setLocation(MainApp.class.getResource("/com/myPerceptron/visualization/NewPerceptronCreationLayout.fxml"));
             AnchorPane perceptronCreationLayout = (AnchorPane) loader.load();
 
             Stage dialogStage = new Stage();
-            dialogStage.setTitle("Creating new perceptron");
+            dialogStage.setTitle("Creating New Perceptron");
             dialogStage.initModality(Modality.WINDOW_MODAL);
             dialogStage.initOwner(mainApp.getPrimaryStage());
             Scene scene = new Scene(perceptronCreationLayout);
             dialogStage.setScene(scene);
 
             NewPerceptronCreationLayoutController controller = loader.getController();
+            controller.setMainApp(mainApp);
             controller.setDialogStage(dialogStage);
 
-           /* Label [] labels = new Label[neuronCount.length];
-            for (int i = 0; i < labels.length; i++) {
-                labels[i] = new Label(Integer.toString(neuronCount[i]));
-            }*/
-
             dialogStage.showAndWait();
+
 
         } catch (IOException e) {
             e.printStackTrace();
         }
 
     }
+
+    public File getImagesDir() {
+        return imagesDir;
+    }
+
 }

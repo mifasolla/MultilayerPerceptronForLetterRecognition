@@ -1,8 +1,9 @@
 package com.myPerceptron.perceptron;
 
-import java.io.BufferedReader;
+import com.myPerceptron.utils.AlertUtils;
+import javafx.scene.control.Alert;
+
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 
 /**
@@ -11,10 +12,10 @@ import java.util.ArrayList;
 public class Perceptron {
 
     private int layersCount;
+    Integer[] neuronsCountInfo;
     Layer[] layers;
 
-
-    public Perceptron(int inputSignalLength) throws IOException {
+    public Perceptron(int inputSignalLength, ArrayList<Integer> neuronsCountInfo) throws IOException {
 
         //  1. write to file input com.myPerc.algorithms.data from images
 
@@ -29,40 +30,45 @@ public class Perceptron {
 
         // 5. create layers by dint of user interaction?
 
-        System.out.println("Layers count = ");
-        layersCount = readNumber();
+        layersCount = neuronsCountInfo.size();
         layers = new Layer[layersCount];
+        this.neuronsCountInfo = new Integer[layersCount];
+        neuronsCountInfo.toArray(this.neuronsCountInfo);
+
         createLayers(inputSignalLength);
-        System.out.println("Perceptron is successfully created!");
 
+        AlertUtils.showAlert("Perceptron is successfully created!", Alert.AlertType.INFORMATION);
 
-    }
+    }/*
 
-    private int readNumber() throws IOException {
-        BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
-        int number;
-        try {
-            number = Integer.parseInt(reader.readLine());
-        } catch (NumberFormatException e) {
-            throw new NumberFormatException();
+    public ArrayList<double[][]> getAllWeights() {
+
+        ArrayList<double[][]> allWeights = new ArrayList<>();
+        for (int i = 0; i < layersCount; i++) {
+            allWeights.add(getLayers(i).getWeights());
         }
-        return number;
-    }
+        return allWeights;
+    }*/
 
     private void createLayers(int inputSignalLength) throws IOException {
         int neuronsCount;
 
         for (int i = 0; i < layersCount; i++) {
-            System.out.println("Enter neurons count in the " + (i + 1) + " layer: ");
-            neuronsCount = readNumber();
+            neuronsCount = neuronsCountInfo[i];
+            final boolean LAST = true;
+
             if (i == 0) {
-                layers[i] = new Layer(i + 1, neuronsCount, inputSignalLength);
+                layers[i] = new Layer(neuronsCount, inputSignalLength, !LAST);
             } else {
-                layers[i] = new Layer(i + 1, neuronsCount, layers[i - 1].getNeuronsCount());
+                if (i != layersCount - 1) {
+                    layers[i] = new Layer(neuronsCount, layers[i - 1].getNeuronsCount() + 1, !LAST);
+                } else {
+                    layers[i] = new Layer(neuronsCount, layers[i - 1].getNeuronsCount() + 1, LAST);
+                }
             }
         }
     }
-
+/*
     private double[] transformListToDoubleArray(ArrayList<Double> arrayList) {
         double[] array = new double[arrayList.size()];
 
@@ -70,7 +76,7 @@ public class Perceptron {
             array[i] = arrayList.get(i).doubleValue();
 
         return array;
-    }
+    }*/
 
     public int getLayersCount() {
         return layersCount;

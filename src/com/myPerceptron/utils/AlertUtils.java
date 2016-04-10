@@ -13,10 +13,10 @@ public final class AlertUtils {
     private AlertUtils() {
     }
 
-    public static void showAlert(String title, String contentText, Alert.AlertType type) {
+    public static void showAlert(String contentText, Alert.AlertType type) {
         Alert alert = new Alert(type);
-        alert.setTitle(title);
-        alert.setHeaderText(title);
+        alert.setTitle("Message");
+        //alert.setHeaderText("");
         alert.setContentText(contentText);
         alert.showAndWait();
     }
@@ -34,15 +34,15 @@ public final class AlertUtils {
                 if(input > 0)
                     return input;
                 else {
-                    showAlert("Unacceptable value!","Please, enter a positive non-zero number!", Alert.AlertType.WARNING);
+                    showAlert("Please, enter a positive non-zero number!", Alert.AlertType.WARNING);
                     return showIntegerInputDialog(title, contentText);
                 }
             } catch (NumberFormatException e) {
-                showAlert("Not a number!", "Please, enter an integer value", Alert.AlertType.WARNING);
+                showAlert("Please, enter an integer value", Alert.AlertType.WARNING);
                 return showIntegerInputDialog(title, contentText);
             }
         } else {
-            showAlert("Null", "Please, enter a number", Alert.AlertType.WARNING);
+            showAlert("Please, enter a number", Alert.AlertType.WARNING);
             return showIntegerInputDialog(title, contentText);
         }
     }
