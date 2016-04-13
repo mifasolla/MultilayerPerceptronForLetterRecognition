@@ -39,9 +39,14 @@ public class BackPropagationAlgorithm {
                 forwardComputation(trainingVectorNumber);
 
                 double errorSignal = calculateErrorSignal(desiredResponseVector, trainingVectorNumber, layersCount);
+
                 Matrix[] localGradients = backwardComputation(layersCount, errorSignal);
 
-                oldDeltaWeights = changeTheWeights(oldDeltaWeights, localGradients, trainingVectorNumber);
+                Matrix[] newDeltaWeights = calculateDeltaWeights(localGradients, trainingVectorNumber);
+
+                changeWeights(oldDeltaWeights, newDeltaWeights, trainingVectorNumber);
+
+                oldDeltaWeights = newDeltaWeights;
             }
             int rightAnswer = 0;
 
@@ -52,36 +57,25 @@ public class BackPropagationAlgorithm {
                 double response = lastLayer.getNeuronOutputs().getElement(0, 0);
 
                 if (getSign(response) == getSign(desiredResponseVector.getElement(generalVectorNum, 0))) {
-
                     rightAnswer++;
                 }
             }
+            System.out.println("Epoch " + epoch + " = " + (double)rightAnswer / (double)generalizationVectorCount);
 
-            System.out.println("Right answer count " + rightAnswer + ", from " + generalizationVectorCount + ".");
-
-            if (rightAnswer / generalizationVectorCount > 0.8) {
-                epoch = 1000;
+            if ((double)rightAnswer / (double)generalizationVectorCount > 0.8) {
                 System.out.println("The perceptron is learned!!!");
+                epoch = 1000;
             }
         }
     }
 
     private void forwardComputation(int trainingVectorIndex) throws Exception {
-        int layersCount = perceptron.getLayersCount();
         Matrix trainingVector = ts.getInputVector(trainingVectorIndex);
-
-        for (int layer = 0; layer < layersCount; layer++) {
-            if (layer == 0) {
-                perceptron.getLayers(layer).calculateNeuronOutputs(trainingVector);
-            } else {
-                perceptron.getLayers(layer).calculateNeuronOutputs(perceptron.getLayers(layer - 1).getNeuronOutputs());
-            }
-        }
+        perceptron.calculateOutputs(trainingVector);
     }
 
     private double calculateErrorSignal(Matrix desiredResponseVector, int vectorNumber, int layersCount) {
         Layer lastLayer = perceptron.getLayers(layersCount - 1);
-
         return desiredResponseVector.getElement(vectorNumber, 0) - lastLayer.getNeuronOutputs().getElement(0, 0);
     }
 
@@ -101,15 +95,14 @@ public class BackPropagationAlgorithm {
                 Matrix nextLocalGradientsVector = localGradients[layerNum + 1].getMatrix();
                 localGradientVector = nextLocalGradientsVector.multiple(nextLayer.getWeights().cutTheColumn(0));
             }
-
-            localGradientVector.multipleColumnsOnScalarVector(getDerivativeOfActivationFunction(currentLayer));
+            localGradientVector.multipleColumnsOnScalarVector(getDerivativeOfActivationFunctionForLayer(currentLayer));
 
             localGradients[layerNum] = localGradientVector;
         }
         return localGradients;
     }
 
-    private double[] getDerivativeOfActivationFunction(Layer layer) {
+    private double[] getDerivativeOfActivationFunctionForLayer(Layer layer) {
         double[] activationFunctionDerivative = new double[layer.getNeuronsCount()];
         Matrix outputs = layer.getNeuronOutputs();
         int k = 1;
@@ -122,20 +115,15 @@ public class BackPropagationAlgorithm {
         return activationFunctionDerivative;
     }
 
-    private Matrix[] changeTheWeights(Matrix[] oldDeltaWeights, Matrix[] localGradients, int trainingVectorNumber)
+    private void changeWeights(Matrix[] oldDeltaWeights, Matrix[] newDeltaWeights, int trainingVectorNumber)
             throws Exception {
 
-        Matrix[] newDeltaWeights = calculateDeltaWeights(localGradients, trainingVectorNumber);
-
-        if (oldDeltaWeights[0] == null) {
-
+        if (trainingVectorNumber == 0) {
             for (int layerNum = 0; layerNum < oldDeltaWeights.length; layerNum++) {
-
                 Layer layer = perceptron.getLayers(layerNum);
                 layer.getWeights().addInPlace(newDeltaWeights[layerNum]);
             }
         } else {
-
             for (int layerNum = 0; layerNum < oldDeltaWeights.length; layerNum++) {
                 oldDeltaWeights[layerNum].scalarMultiplicationInPlace(ALPHA);
                 newDeltaWeights[layerNum].addInPlace(oldDeltaWeights[layerNum]);
@@ -144,7 +132,6 @@ public class BackPropagationAlgorithm {
                 layer.getWeights().addInPlace(newDeltaWeights[layerNum]);
             }
         }
-        return newDeltaWeights;
     }
 
     private Matrix[] calculateDeltaWeights(Matrix[] localGradients, int trainingVectorNumber) throws Exception {
@@ -162,7 +149,6 @@ public class BackPropagationAlgorithm {
                 transposedLocalGradient = localGradients[i].transpose();
                 transposedInputs = previousLayer.getNeuronOutputs().transpose();
             }
-
             newDeltaWeights[i] = transposedLocalGradient.multiple(transposedInputs);
             newDeltaWeights[i].scalarMultiplicationInPlace(ETA);
         }

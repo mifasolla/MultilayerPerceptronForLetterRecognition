@@ -35,6 +35,12 @@ public class TrainingSample {
 
     }
 
+    public TrainingSample(Matrix trainingSample, Matrix desiredResponseVector) {
+
+        this.trainingSample = trainingSample;
+        this.desiredResponseVector = desiredResponseVector;
+    }
+
     public Matrix getInputVector(int number) {
         return trainingSample.getVectorFromColumn(number);
     }
@@ -67,12 +73,10 @@ public class TrainingSample {
 
                 if (imagesList[k].getName().contains("V")) desiredResponseVector.setElement(k, 0, 1);
                 else if (imagesList[k].getName().contains("Z")) desiredResponseVector.setElement(k, 0, -1);
-                else AlertUtils.showAlert("Image name is written in the wrong format.", Alert.AlertType.WARNING);
+                else AlertUtils.showAlert("Image name is written in the wrong format." + imagesList[k].getName(),
+                            Alert.AlertType.WARNING);
 
-
-                Rectangle2D letterBorders = ImageUtils.getLetterBorders(image);
-
-                double[] trainingVector = ImageUtils.getVectorFromImage(image, letterBorders);
+                double[] trainingVector = ImageUtils.getVectorFromImage(image);
 
                 trainingSample.setColumn(k, trainingVector);
 
@@ -80,7 +84,6 @@ public class TrainingSample {
         } else {
             // throw some exception?
         }
-        shuffle();
     }
 
     private boolean isRightDirectory(File imagesDir) {

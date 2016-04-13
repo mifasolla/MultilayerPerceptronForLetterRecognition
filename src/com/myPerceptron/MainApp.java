@@ -12,6 +12,7 @@ import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
+import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.WritableImage;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
@@ -77,22 +78,17 @@ public class MainApp extends Application {
     }
 
     public double solve(WritableImage image) throws Exception {
-        Rectangle2D imageBorders = ImageUtils.getLetterBorders(image);
-
-        double[] inputArray = ImageUtils.getVectorFromImage(image, imageBorders);
+        double[] inputArray = ImageUtils.getVectorFromImage(image);
 
         Matrix inputVector = new Matrix(inputArray.length, 1);
         inputVector.setVerticalVector(inputArray);
+        System.out.println("Input vector ");
+        inputVector.show();
 
-        int layersCount = perceptron.getLayersCount();
+        perceptron.calculateOutputs(inputVector);
+        System.out.println("Response");
+        perceptron.getLayers(perceptron.getLayersCount() - 1).getNeuronOutputs().show();
 
-        for (int layer = 0; layer < layersCount; layer++) {
-            if (layer == 0) {
-                perceptron.getLayers(layer).calculateNeuronOutputs(inputVector);
-            } else {
-                perceptron.getLayers(layer).calculateNeuronOutputs(perceptron.getLayers(layer - 1).getNeuronOutputs());
-            }
-        }
-        return perceptron.getLayers(layersCount - 1).getNeuronOutputs().getElement(0, 0);
+        return perceptron.getLayers(perceptron.getLayersCount() - 1).getNeuronOutputs().getElement(0, 0);
     }
 }

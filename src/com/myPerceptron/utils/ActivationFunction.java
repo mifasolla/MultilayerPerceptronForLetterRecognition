@@ -5,8 +5,10 @@ package com.myPerceptron.utils;
  */
 public class ActivationFunction {
 
-    private static final double A = 1.7159;
-    private static final double B = 0.66;
+    //private static final double A = 1.7159;
+    private static final double A = 1;
+    //private static final double B = 0.66;
+    private static final double B = 1;
 
 
     private ActivationFunction() {
@@ -25,6 +27,6 @@ public class ActivationFunction {
     }
 
     private static double calculateDerivative (double value) {
-       return B / A * (A - value) * (A + value);
+       return (B / A )* ((A - value) * (A + value));
     }
 }

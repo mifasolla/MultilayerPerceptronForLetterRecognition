@@ -1,6 +1,7 @@
 package com.myPerceptron.perceptron;
 
 import com.myPerceptron.utils.AlertUtils;
+import com.myPerceptron.utils.Matrix;
 import javafx.scene.control.Alert;
 
 import java.io.IOException;
@@ -12,8 +13,9 @@ import java.util.ArrayList;
 public class Perceptron {
 
     private int layersCount;
-    Integer[] neuronsCountInfo;
-    Layer[] layers;
+    private Integer[] neuronsCountInfo;
+    private Layer[] layers;
+    private int inputSignalLength;
 
     public Perceptron(int inputSignalLength, ArrayList<Integer> neuronsCountInfo) throws IOException {
 
@@ -30,6 +32,7 @@ public class Perceptron {
 
         // 5. create layers by dint of user interaction?
 
+        this.inputSignalLength = inputSignalLength;
         layersCount = neuronsCountInfo.size();
         layers = new Layer[layersCount];
         this.neuronsCountInfo = new Integer[layersCount];
@@ -39,16 +42,30 @@ public class Perceptron {
 
         AlertUtils.showAlert("Perceptron is successfully created!", Alert.AlertType.INFORMATION);
 
-    }/*
+    }
 
-    public ArrayList<double[][]> getAllWeights() {
-
-        ArrayList<double[][]> allWeights = new ArrayList<>();
-        for (int i = 0; i < layersCount; i++) {
-            allWeights.add(getLayers(i).getWeights());
+    public void calculateOutputs(Matrix inputSignal) throws Exception {
+        if (inputSignal.getColumnCount() != 1) {
+            throw new RuntimeException("Illegal input signal dimensions. Input signal has " +
+                    inputSignal.getColumnCount() + " columns.");
         }
-        return allWeights;
-    }*/
+
+        if (inputSignal.getRowCount() != inputSignalLength) {
+            throw new RuntimeException("Illegal input signal dimensions. Input signal has " +
+                    inputSignal.getRowCount() + " rows.");
+        }
+
+        for (int layer = 0; layer < layersCount; layer++) {
+            if (layer == 0) {
+                getLayers(layer).calculateNeuronOutputs(inputSignal);
+            } else {
+                getLayers(layer).calculateNeuronOutputs(getLayers(layer - 1).getNeuronOutputs());
+            }
+        }
+/*
+        System.out.print("Output = " );
+        getLayers(getLayersCount() - 1).getNeuronOutputs().show();*/
+    }
 
     private void createLayers(int inputSignalLength) throws IOException {
         int neuronsCount;
@@ -68,15 +85,6 @@ public class Perceptron {
             }
         }
     }
-/*
-    private double[] transformListToDoubleArray(ArrayList<Double> arrayList) {
-        double[] array = new double[arrayList.size()];
-
-        for (int i = 0; i < arrayList.size(); i++)
-            array[i] = arrayList.get(i).doubleValue();
-
-        return array;
-    }*/
 
     public int getLayersCount() {
         return layersCount;

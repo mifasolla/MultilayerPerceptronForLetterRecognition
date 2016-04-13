@@ -5,7 +5,6 @@ import com.myPerceptron.algorithms.TrainingSample;
 import com.myPerceptron.utils.AlertUtils;
 import com.myPerceptron.utils.FileUtils;
 import com.myPerceptron.utils.ImageUtils;
-import com.myPerceptron.utils.Matrix;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -62,7 +61,6 @@ public class OpeningLayoutController {
     @FXML
     private Tab learningTab;
 
-
     private GraphicsContext gc;
     private MainApp mainApp;
 
@@ -109,7 +107,6 @@ public class OpeningLayoutController {
     @FXML
     private void onSaveAPictureButtonClick() {
         try {
-
             WritableImage snapshot = getPicture();
 
             File imagesDir = FileUtils.createImagesDir();
@@ -138,40 +135,13 @@ public class OpeningLayoutController {
 
     @FXML
     private void onShowPictureGridClick() {
-        Rectangle2D letterArea = ImageUtils.getLetterBorders(getPicture());
-
-        int xSegmentLength = (int) letterArea.getWidth() / 10;
-        int ySegmentLength = (int) letterArea.getHeight() / 10;
-        int xMod10 = (int) letterArea.getWidth() % 10;
-        int yMod10 = (int) letterArea.getHeight() % 10;
-        double x = letterArea.getMinX();
-        double y = letterArea.getMinY();
-
-
-        for (int i = 0; i < 10; i++) {
-            for (int j = 0; j < 10; j++) {
-                gc.setStroke(Color.YELLOW);
-                gc.strokeRect(x, y, xSegmentLength, ySegmentLength);
-                y += ySegmentLength;
-                if (j + 1 == 9) {
-                    ySegmentLength += yMod10;
-                }
-            }
-            y = letterArea.getMinY();
-            ySegmentLength -= yMod10;
-            x += xSegmentLength;
-            if (i + 1 == 9) {
-                xSegmentLength += xMod10;
-            }
-        }
+        ImageUtils.showPictureGrid(ImageUtils.getLetterBorders(getPicture()), gc);
     }
 
     @FXML
     private void onConvertImagesToTrainingSampleClick() throws IOException {
-
         imagesDir = new File(".\\src\\com\\myPerceptron\\data\\images");
         mainApp.setTrainingSample(new TrainingSample(imagesDir));
-
     }
 
     @FXML
@@ -181,10 +151,8 @@ public class OpeningLayoutController {
 
     @FXML
     private void handleNew() {
-
         showNewPerceptronCreationLayout();
         //toLearningTab();
-
     }
 
     @FXML
@@ -193,31 +161,11 @@ public class OpeningLayoutController {
     }
 
     @FXML
-    private void onTestMatrixClick() {
-        Matrix matrix = new Matrix(4, 2);
-
-        for (int i = 0; i < 4; i++) {
-            for (int j = 0; j < 2; j++) {
-                matrix.setElement(i, j, (i + 1) * (j + 1));
-            }
-        }
-
-        matrix.show();
-        double [] scalarVector = {10, 2};
-
-        matrix.multipleColumnsOnScalarVector(scalarVector);
-        matrix.show();
-    }
-
-    @FXML
     private void onRecognitionButtonClick() throws Exception {
-
-        WritableImage snapshot = getPicture();
-
-        double result = mainApp.solve(snapshot);
-
+        double result = mainApp.solve(getPicture());
         AlertUtils.showAlert("Result = " + result, Alert.AlertType.INFORMATION);
     }
+
 
     private void toLearningTab() {
         recognitionTab.setDisable(true);

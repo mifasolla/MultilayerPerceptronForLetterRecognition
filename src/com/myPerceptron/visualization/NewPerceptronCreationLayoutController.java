@@ -24,6 +24,8 @@ public class NewPerceptronCreationLayoutController {
     private MainApp mainApp;
     private Stage dialogStage;
     private ArrayList<Integer> neuronsCountInfo;
+    private final int INPUT_LENGTH = 101;
+    private final int LAST_LAYER_NEURONS_COUNT = 1;
 
     @FXML
     private void initialize() {
@@ -37,7 +39,7 @@ public class NewPerceptronCreationLayoutController {
         if (checkStructure(structure)) {
             neuronsCountInfo = parsePerceptronStructure(structure);
 
-            mainApp.setPerceptron(new Perceptron(101, neuronsCountInfo));
+            mainApp.setPerceptron(new Perceptron(INPUT_LENGTH, neuronsCountInfo));
             
             dialogStage.close();
         }
@@ -100,7 +102,7 @@ public class NewPerceptronCreationLayoutController {
                 integerStart = integerEnd + 1;
             }
         }
-        neuronCountInfo.add(1);
+        neuronCountInfo.add(LAST_LAYER_NEURONS_COUNT);
         return neuronCountInfo;
     }
 }

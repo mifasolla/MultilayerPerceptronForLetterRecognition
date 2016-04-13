@@ -15,7 +15,7 @@ public class Matrix {
         matrix = new double[N][M];
     }
 
-    public Matrix getMatrix() {
+    public Matrix getMatrix() { // apple.getApple :)
         Matrix copy = new Matrix(this.getRowCount(), this.getColumnCount());
 
         for (int i = 0; i < this.getRowCount(); i++) {
@@ -28,7 +28,7 @@ public class Matrix {
 
     public Matrix getVectorFromColumn(int columnNumber) {
 
-        if(columnNumber > this.getColumnCount() - 1) {
+        if (columnNumber > this.getColumnCount() - 1) {
             throw new RuntimeException("Column index is " + columnNumber + ", but column count is " + this.getColumnCount());
         }
 
@@ -85,7 +85,7 @@ public class Matrix {
     public void show() {
         for (int i = 0; i < this.getRowCount(); i++) {
             for (int j = 0; j < this.getColumnCount(); j++) {
-                System.out.print((int) this.getElement(i, j) + " ");
+                System.out.print(this.getElement(i, j) + " ");
             }
             System.out.println();
         }
@@ -242,4 +242,27 @@ public class Matrix {
             }
         }
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null || this.getClass() != obj.getClass()) {
+            return false;
+        } else {
+            Matrix other = (Matrix) obj;
+
+            if (getColumnCount() != other.getColumnCount() || getRowCount() != other.getRowCount()) {
+                return false;
+            } else {
+                for (int i = 0; i < this.getRowCount(); i++) {
+                    for (int j = 0; j < this.getColumnCount(); j++) {
+                        if (matrix[i][j] != other.matrix[i][j]) { // that's better понятно )
+                            return false;
+                        }
+                    }
+                }
+                return true;
+            }
+        }
+    }
+
 }

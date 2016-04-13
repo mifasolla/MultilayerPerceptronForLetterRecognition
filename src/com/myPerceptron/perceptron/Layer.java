@@ -37,6 +37,7 @@ public class Layer {
 
         outputVector = initializeOutputVector();
         Matrix inducedLocalFieldVector = weights.multiple(inputVector);
+
         double[] neuronOutputs = getActivationFunctionResult(inducedLocalFieldVector);
 
 
