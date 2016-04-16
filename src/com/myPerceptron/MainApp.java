@@ -79,6 +79,10 @@ public class MainApp extends Application {
 
     public double solve(WritableImage image) throws Exception {
         double[] inputArray = ImageUtils.getVectorFromImage(image);
+        System.out.println("WEIGHTS");
+        for (int i = 0; i < perceptron.getLayersCount(); i++) {
+            perceptron.getLayers(i).getWeights().show();
+        }
 
         Matrix inputVector = new Matrix(inputArray.length, 1);
         inputVector.setVerticalVector(inputArray);

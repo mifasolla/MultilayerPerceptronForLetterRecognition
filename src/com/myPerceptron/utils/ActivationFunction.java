@@ -15,18 +15,24 @@ public class ActivationFunction {
     }
 
     public static double getResult(double value) {
-        return calculate(value);
-    }
-
-    public static double getDerivativeResult(double value) {
-        return calculateDerivative(value);
-    }
-
-    private static double calculate(double value) {
         return A * Math.tanh(B * value);
     }
 
-    private static double calculateDerivative (double value) {
-       return (B / A )* ((A - value) * (A + value));
+    /**
+     * Производная берётся не по значению переменной, а по результатам функции в значении переменной.
+     * Т.е. сначала считаем функцию от значения, а потом подставляем результат в метод и он посчитает производную от
+     * значения через результат функции
+     */
+
+    public static double getDerivativeResult(double functionValue) {
+        return (B / A )* ((A - functionValue) * (A + functionValue));
+    }
+
+    public static double getA() {
+        return A;
+    }
+
+    public static double getB() {
+        return B;
     }
 }

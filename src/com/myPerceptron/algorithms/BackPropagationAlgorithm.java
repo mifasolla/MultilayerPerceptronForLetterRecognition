@@ -33,20 +33,27 @@ public class BackPropagationAlgorithm {
             desiredResponseVector = ts.getDesiredResponseVector();
 
             Matrix[] oldDeltaWeights = new Matrix[layersCount];
+            for(int i = 0; i < oldDeltaWeights.length; i++) {
+                oldDeltaWeights[i] = new Matrix(perceptron.getLayers(i).getWeights().getRowCount(),
+                                perceptron.getLayers(i).getWeights().getColumnCount());
+            }
 
             for (int trainingVectorNumber = 0; trainingVectorNumber < trainingVectorCount; trainingVectorNumber++) {
 
                 forwardComputation(trainingVectorNumber);
 
-                double errorSignal = calculateErrorSignal(desiredResponseVector, trainingVectorNumber, layersCount);
+                Layer lastLayer = perceptron.getLayers(layersCount - 1);
+                double errorSignal = desiredResponseVector.getElement(trainingVectorNumber, 0) - lastLayer.getNeuronOutputs().getElement(0, 0);
 
-                Matrix[] localGradients = backwardComputation(layersCount, errorSignal);
+                Matrix[] localGradients = getLocalGradients(layersCount, errorSignal);
 
                 Matrix[] newDeltaWeights = calculateDeltaWeights(localGradients, trainingVectorNumber);
 
                 changeWeights(oldDeltaWeights, newDeltaWeights, trainingVectorNumber);
 
-                oldDeltaWeights = newDeltaWeights;
+                for (int i = 0; i < layersCount; i++) {
+                    oldDeltaWeights[i].setMatrix(newDeltaWeights[i]);
+                }
             }
             int rightAnswer = 0;
 
@@ -74,12 +81,7 @@ public class BackPropagationAlgorithm {
         perceptron.calculateOutputs(trainingVector);
     }
 
-    private double calculateErrorSignal(Matrix desiredResponseVector, int vectorNumber, int layersCount) {
-        Layer lastLayer = perceptron.getLayers(layersCount - 1);
-        return desiredResponseVector.getElement(vectorNumber, 0) - lastLayer.getNeuronOutputs().getElement(0, 0);
-    }
-
-    private Matrix[] backwardComputation(int layersCount, double errorSignal) throws Exception {
+    private Matrix[] getLocalGradients(int layersCount, double errorSignal) throws Exception {
         Matrix[] localGradients = new Matrix[layersCount];
 
         for (int layerNum = layersCount - 1; layerNum >= 0; layerNum--) {
@@ -92,8 +94,8 @@ public class BackPropagationAlgorithm {
                 localGradientVector.setElement(0, 0, errorSignal);
             } else {
                 Layer nextLayer = perceptron.getLayers(layerNum + 1);
-                Matrix nextLocalGradientsVector = localGradients[layerNum + 1].getMatrix();
-                localGradientVector = nextLocalGradientsVector.multiple(nextLayer.getWeights().cutTheColumn(0));
+                Matrix nextLocalGradientsVector = localGradients[layerNum + 1].copy();
+                localGradientVector = nextLocalGradientsVector.multiple(nextLayer.getWeights().cutColumn(0));
             }
             localGradientVector.multipleColumnsOnScalarVector(getDerivativeOfActivationFunctionForLayer(currentLayer));
 
@@ -121,7 +123,9 @@ public class BackPropagationAlgorithm {
         if (trainingVectorNumber == 0) {
             for (int layerNum = 0; layerNum < oldDeltaWeights.length; layerNum++) {
                 Layer layer = perceptron.getLayers(layerNum);
-                layer.getWeights().addInPlace(newDeltaWeights[layerNum]);
+                Matrix newWeights = layer.getWeights();
+                newWeights.addInPlace(newDeltaWeights[layerNum]);
+                layer.setWeights(newWeights);
             }
         } else {
             for (int layerNum = 0; layerNum < oldDeltaWeights.length; layerNum++) {
@@ -129,7 +133,9 @@ public class BackPropagationAlgorithm {
                 newDeltaWeights[layerNum].addInPlace(oldDeltaWeights[layerNum]);
 
                 Layer layer = perceptron.getLayers(layerNum);
-                layer.getWeights().addInPlace(newDeltaWeights[layerNum]);
+                Matrix newWeights = layer.getWeights();
+                newWeights.addInPlace(newDeltaWeights[layerNum]);
+                layer.setWeights(newWeights);
             }
         }
     }

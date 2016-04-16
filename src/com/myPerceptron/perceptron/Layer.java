@@ -24,9 +24,16 @@ public class Layer {
         setRandomWeights();
     }
 
+    public Layer(Matrix weights, boolean last) {
+        this.weights = weights;
+        this.last = last;
+
+        neuronsCount = weights.getRowCount();
+    }
+
     public int getNeuronsCount() {
         return neuronsCount;
-    }
+    } // tested
 
     public void calculateNeuronOutputs(Matrix inputVector) throws Exception {
 
@@ -35,8 +42,9 @@ public class Layer {
                     " column count instead 1 column.");
         }
 
+        Matrix inputVectorCopy = inputVector.copy();
         outputVector = initializeOutputVector();
-        Matrix inducedLocalFieldVector = weights.multiple(inputVector);
+        Matrix inducedLocalFieldVector = weights.multiple(inputVectorCopy);
 
         double[] neuronOutputs = getActivationFunctionResult(inducedLocalFieldVector);
 
@@ -48,15 +56,23 @@ public class Layer {
         } else {
             outputVector.setVerticalVector(neuronOutputs);
         }
-    }
+    } // tested
 
     public Matrix getNeuronOutputs() {
-        return outputVector;
+        return outputVector.copy();
     }
 
     public Matrix getWeights() {
-        return weights;
+        return weights.copy();
     }
+
+    public void setWeights(Matrix newWeights) {
+        weights.setMatrix(newWeights);
+    }
+
+    public boolean isLast() {
+        return last;
+    } // tested
 
     private void setRandomWeights() {
         Random rand = new Random();
@@ -65,10 +81,6 @@ public class Layer {
                 weights.setElement(i, j, rand.nextDouble());
             }
         }
-    }
-
-    public boolean isLast() {
-        return last;
     }
 
     private Matrix initializeOutputVector() {

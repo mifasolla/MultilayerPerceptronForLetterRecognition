@@ -4,8 +4,11 @@ import com.myPerceptron.utils.AlertUtils;
 import com.myPerceptron.utils.Matrix;
 import javafx.scene.control.Alert;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Scanner;
 
 /**
  * Created by Vika on 13.02.2016.
@@ -41,6 +44,21 @@ public class Perceptron {
         createLayers(inputSignalLength);
 
         AlertUtils.showAlert("Perceptron is successfully created!", Alert.AlertType.INFORMATION);
+
+    }
+
+    public Perceptron(File weightsInfo) throws FileNotFoundException {
+        if (!weightsInfo.exists()) {
+            throw new FileNotFoundException("Info file does not exist. Check file path.");
+        }
+
+        Matrix[] perceptronWeights = parseFile(weightsInfo);
+        this.layersCount = perceptronWeights.length;
+        this.layers = new Layer[layersCount];
+
+        createLayers(perceptronWeights);
+        AlertUtils.showAlert("Perceptron is download", Alert.AlertType.INFORMATION);
+        this.inputSignalLength = layers[0].getWeights().getColumnCount();
 
     }
 
@@ -86,12 +104,73 @@ public class Perceptron {
         }
     }
 
+    private void createLayers(Matrix[] weightsInfo) {
+        boolean last = true;
+        for (int i = 0; i < weightsInfo.length; i++) {
+            if (i < weightsInfo.length - 1) {
+                layers[i] = new Layer(weightsInfo[i], !last);
+            } else {
+                layers[i] = new Layer(weightsInfo[i], last);
+            }
+        }
+    }
+
     public int getLayersCount() {
         return layersCount;
     }
 
     public Layer getLayers(int layerNumber) {
         return layers[layerNumber];
+    }
+
+    private Matrix parseLines(ArrayList<String> infoLines) {
+        int rowCount = infoLines.size();
+        System.out.println("Rows: " + rowCount);
+        String[] lineSplitArray = infoLines.get(0).split(" ");
+        int columnCount = lineSplitArray.length;
+        System.out.println("Cols: " + columnCount);
+        double[][] weights = new double[rowCount][columnCount];
+
+        for (int i = 0; i < rowCount; i++) {
+            String[] lineSplit = infoLines.get(i).split(" ");
+            for (int j = 0; j < lineSplit.length; j++) {
+                lineSplit[j] = lineSplit[j].replace(',', '.');
+                weights[i][j] = Double.valueOf(lineSplit[j]);
+            }
+        }
+
+        return new Matrix(weights);
+    }
+
+    private Matrix[] parseFile(File weightsInfo) throws FileNotFoundException {
+        ArrayList<Matrix> perceptronWeights = new ArrayList<>();
+        Scanner fileScanner = new Scanner(weightsInfo);
+        fileScanner.useDelimiter("[/n]");
+        String line = "";
+        ArrayList<String> infoLines = null;
+
+        while (fileScanner.hasNextLine()) {
+            line = fileScanner.nextLine();
+            if (line.contains("Layer")) {
+                if (infoLines != null) {
+                    Matrix weights = parseLines(infoLines);
+                    perceptronWeights.add(weights);
+                }
+
+                infoLines = new ArrayList<>();
+                line = fileScanner.nextLine();
+            }
+            infoLines.add(line);
+        }
+        perceptronWeights.add(parseLines(infoLines));
+
+        Matrix[] allWeights = new Matrix[perceptronWeights.size()];
+        int rightOrder = allWeights.length - 1;
+        for (int i = 0; i < allWeights.length; i++) {
+            allWeights[i] = perceptronWeights.get(rightOrder);
+            rightOrder--;
+        }
+        return allWeights;
     }
 
 }
