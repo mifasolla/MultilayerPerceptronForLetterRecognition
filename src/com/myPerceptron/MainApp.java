@@ -5,14 +5,14 @@ package com.myPerceptron; /**
 import com.myPerceptron.algorithms.BackPropagationAlgorithm;
 import com.myPerceptron.algorithms.TrainingSample;
 import com.myPerceptron.perceptron.Perceptron;
+import com.myPerceptron.utils.AlertUtils;
 import com.myPerceptron.utils.ImageUtils;
 import com.myPerceptron.utils.Matrix;
 import com.myPerceptron.visualization.OpeningLayoutController;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
-import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
-import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.control.Alert;
 import javafx.scene.image.WritableImage;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
@@ -79,20 +79,29 @@ public class MainApp extends Application {
 
     public double solve(WritableImage image) throws Exception {
         double[] inputArray = ImageUtils.getVectorFromImage(image);
-        System.out.println("WEIGHTS");
-        for (int i = 0; i < perceptron.getLayersCount(); i++) {
-            perceptron.getLayers(i).getWeights().show();
-        }
 
         Matrix inputVector = new Matrix(inputArray.length, 1);
         inputVector.setVerticalVector(inputArray);
-        System.out.println("Input vector ");
-        inputVector.show();
 
-        perceptron.calculateOutputs(inputVector);
-        System.out.println("Response");
-        perceptron.getLayers(perceptron.getLayersCount() - 1).getNeuronOutputs().show();
+        if (!inputVector.cutRow(0).isNull()) {
+            perceptron.calculateOutputs(inputVector);
+            return perceptron.getLayers(perceptron.getLayersCount() - 1).getNeuronOutputs().getElement(0, 0);
+        } else {
+            AlertUtils.showAlert("Input vector is null. Try another picture.", Alert.AlertType.INFORMATION);
+            return -2;
+        }
+    }
 
-        return perceptron.getLayers(perceptron.getLayersCount() - 1).getNeuronOutputs().getElement(0, 0);
+    public double solve(Matrix inputVector) throws Exception {
+        if (!inputVector.cutRow(0).isNull()) {
+
+            perceptron.calculateOutputs(inputVector);
+            perceptron.getLayers(perceptron.getLayersCount() - 1).getNeuronOutputs().show();
+
+            return perceptron.getLayers(perceptron.getLayersCount() - 1).getNeuronOutputs().getElement(0, 0);
+        } else {
+            AlertUtils.showAlert("Input vector is null. Try another picture.", Alert.AlertType.INFORMATION);
+            return -2;
+        }
     }
 }

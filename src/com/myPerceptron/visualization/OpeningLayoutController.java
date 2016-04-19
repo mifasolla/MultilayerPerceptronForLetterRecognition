@@ -6,6 +6,7 @@ import com.myPerceptron.perceptron.Perceptron;
 import com.myPerceptron.utils.AlertUtils;
 import com.myPerceptron.utils.FileUtils;
 import com.myPerceptron.utils.ImageUtils;
+import com.myPerceptron.utils.Matrix;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -90,7 +91,7 @@ public class OpeningLayoutController {
         canvas.addEventHandler(MouseEvent.MOUSE_DRAGGED, new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent e) {
-                gc.fillRect(e.getX() - 2, e.getY() - 2, 5, 5);
+                gc.fillOval(e.getX(), e.getY(), 13, 13);
             }
         });
     }
@@ -101,6 +102,7 @@ public class OpeningLayoutController {
     }
 
     private void drawCanvasBorder() {
+        gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
         gc.setFill(Color.RED);
         gc.fillRect(0, 0, canvas.getWidth(), canvas.getHeight());
         gc.setFill(Color.WHITE);
@@ -144,7 +146,7 @@ public class OpeningLayoutController {
 
     @FXML
     private void onConvertImagesToTrainingSampleClick() throws IOException {
-        imagesDir = new File(".\\src\\com\\myPerceptron\\data\\Aleks_sample");
+        imagesDir = new File(".\\src\\com\\myPerceptron\\data\\images");
         mainApp.setTrainingSample(new TrainingSample(imagesDir));
     }
 
@@ -167,30 +169,14 @@ public class OpeningLayoutController {
     @FXML
     private void onRecognitionButtonClick() throws Exception {
         double result = mainApp.solve(getPicture());
-        AlertUtils.showAlert("Result = " + result, Alert.AlertType.INFORMATION);
+        if(result != -2) {
+            if(result < 0){
+                AlertUtils.showAlert("This is Z", Alert.AlertType.INFORMATION);
+            } else {
+                AlertUtils.showAlert("This is V", Alert.AlertType.INFORMATION);
+            }
+        }
     }
-
-    @FXML
-    private void onTestButtonClick() throws FileNotFoundException {
-        File toWeights = new File(".\\src\\com\\myPerceptron\\data\\savedPerceptrons\\weigths_1.txt");
-
-        mainApp.setPerceptron(new Perceptron(toWeights));
-    }
-
-    @FXML
-    private void onTestA() {
-        File toPicture = new File(".\\src\\com\\myPerceptron\\data\\Aleks_sample");
-        Image testImage = new Image(toPicture.listFiles()[10].toURI().toString());
-        gc.drawImage(testImage, 10, 10);
-    }
-
-    @FXML
-    private void onTestZh() {
-        File toPicture = new File(".\\src\\com\\myPerceptron\\data\\Aleks_sample");
-        Image testImage = new Image(toPicture.listFiles()[150].toURI().toString());
-        gc.drawImage(testImage, 10, 10);
-    }
-
 
     private void toLearningTab() {
         recognitionTab.setDisable(true);

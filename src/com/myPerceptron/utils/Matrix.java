@@ -1,7 +1,5 @@
 package com.myPerceptron.utils;
 
-import javax.management.RuntimeMBeanException;
-
 /**
  * Created by Vika on 24.03.2016.
  */
@@ -34,7 +32,7 @@ public class Matrix {
         double[][] matrixCopy = new double[getRowCount()][getColumnCount()];
 
         for (int i = 0; i < matrixCopy.length; i++) {
-            for (int j = 0; j < matrixCopy[i].length; j++){
+            for (int j = 0; j < matrixCopy[i].length; j++) {
                 matrixCopy[i][j] = matrix[i][j];
             }
         }
@@ -187,6 +185,24 @@ public class Matrix {
         return reducedMatrix;
     } // tested
 
+    public Matrix cutRow(int rowNumber) {
+        if (rowNumber > this.getRowCount() - 1 || rowNumber < 0) {
+            throw new RuntimeException("Illegal row index");
+        }
+
+        Matrix reducedMatrix = new Matrix(this.getRowCount() - 1, this.getColumnCount());
+
+        for (int i = 0; i < this.getRowCount(); i++) {
+            if (i < rowNumber) {
+                reducedMatrix.setRow(i, this.getRow(i));
+            } else if (i > rowNumber) {
+                int j = i - 1;
+                reducedMatrix.setRow(j, this.getRow(i));
+            }
+        }
+        return reducedMatrix;
+    } // tested
+
     public void swapColumns(int i, int j) {
         // need to add checking for i and j
         double[] columnI = this.getColumn(i);
@@ -221,6 +237,15 @@ public class Matrix {
                 return true;
             }
         }
+    }
+
+    public boolean isNull() {
+        for (int i = 0; i < matrix.length; i++) {
+            for (int j = 0; j < matrix[i].length; j++) {
+                if (matrix[i][j] != 0) return false;
+            }
+        }
+        return true;
     }
 
     public void show() {

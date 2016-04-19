@@ -80,9 +80,6 @@ public class Perceptron {
                 getLayers(layer).calculateNeuronOutputs(getLayers(layer - 1).getNeuronOutputs());
             }
         }
-/*
-        System.out.print("Output = " );
-        getLayers(getLayersCount() - 1).getNeuronOutputs().show();*/
     }
 
     private void createLayers(int inputSignalLength) throws IOException {
@@ -123,24 +120,13 @@ public class Perceptron {
         return layers[layerNumber];
     }
 
-    private Matrix parseLines(ArrayList<String> infoLines) {
-        int rowCount = infoLines.size();
-        System.out.println("Rows: " + rowCount);
-        String[] lineSplitArray = infoLines.get(0).split(" ");
-        int columnCount = lineSplitArray.length;
-        System.out.println("Cols: " + columnCount);
-        double[][] weights = new double[rowCount][columnCount];
-
-        for (int i = 0; i < rowCount; i++) {
-            String[] lineSplit = infoLines.get(i).split(" ");
-            for (int j = 0; j < lineSplit.length; j++) {
-                lineSplit[j] = lineSplit[j].replace(',', '.');
-                weights[i][j] = Double.valueOf(lineSplit[j]);
-            }
-        }
-
-        return new Matrix(weights);
-    }
+    /**
+     *
+     * @param weightsInfo Txt file, where consists information about weights.
+     *                    Matrices of weights in file are written in descending layer order, from last layer to first.
+     * @return Array with matrices of layers weights in ascending layer order.
+     * @throws FileNotFoundException
+     */
 
     private Matrix[] parseFile(File weightsInfo) throws FileNotFoundException {
         ArrayList<Matrix> perceptronWeights = new ArrayList<>();
@@ -171,6 +157,23 @@ public class Perceptron {
             rightOrder--;
         }
         return allWeights;
+    }
+
+    private Matrix parseLines(ArrayList<String> infoLines) {
+        int rowCount = infoLines.size();
+        String[] lineSplitArray = infoLines.get(0).split(" ");
+        int columnCount = lineSplitArray.length;
+        double[][] weights = new double[rowCount][columnCount];
+
+        for (int i = 0; i < rowCount; i++) {
+            String[] lineSplit = infoLines.get(i).split(" ");
+            for (int j = 0; j < lineSplit.length; j++) {
+                lineSplit[j] = lineSplit[j].replace(',', '.');
+                weights[i][j] = Double.valueOf(lineSplit[j]);
+            }
+        }
+
+        return new Matrix(weights);
     }
 
 }

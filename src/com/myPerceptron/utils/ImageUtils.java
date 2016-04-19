@@ -4,7 +4,6 @@ import javafx.geometry.Rectangle2D;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 import javafx.scene.image.PixelReader;
-import javafx.scene.image.WritableImage;
 import javafx.scene.paint.Color;
 
 /**
@@ -43,7 +42,7 @@ public final class ImageUtils {
             }
         }
 
-        return new Rectangle2D(left + 1, bottom + 1, right - left, top - bottom);
+        return new Rectangle2D(left, bottom, right - left + 1, top - bottom + 1);
     }
 
     public static double[] getVectorFromImage(Image image) {
@@ -59,41 +58,50 @@ public final class ImageUtils {
         int yMod10 = (int) imageBorders.getHeight() % 10;
         int x = (int) imageBorders.getMinX();
         int y = (int) imageBorders.getMinY();
+        PixelReader pixels = image.getPixelReader();
 
-        for (int xSegment = 0; xSegment < 10; xSegment++) {
-            for (int ySegment = 0; ySegment < 10; ySegment++) {
+        for (int ySegmentNum = 0; ySegmentNum < 10; ySegmentNum++) {
+            for (int xSegmentNum = 0; xSegmentNum < 10; xSegmentNum++) {
+                int count = 0;
 
-                for (int i = x; i < x + xSegmentLength; i++) {
-                    for (int j = y; j < y + ySegmentLength; j++) {
+                for (int j = y; j < y + ySegmentLength; j++) {
+                    for (int i = x; i < x + xSegmentLength; i++) {
 
-                        PixelReader pixels = image.getPixelReader();
                         int rgb = pixels.getArgb(i, j);
                         double b = ((rgb) & 0xFF);
                         double g = ((rgb >> 8) & 0xFF);
                         double r = ((rgb >> 16) & 0xFF);
 
                         if (r == 0 && g == 0 && b == 0) {
-                            trainingVector[xSegment * 10 + ySegment + 1] = 1;
-                            i += xSegmentLength;
-                            j += ySegmentLength;
+                            count++;
+                            if(count > ((xSegmentLength*ySegmentLength)/10)) {
+                                trainingVector[ySegmentNum * 10 + xSegmentNum + 1] = 1; // + 1, потому что на 0-м месте всегда стоит 1, остальные координаты вектора нужно заполнять со сдвигом на один
+                                /*gc.setStroke(Color.RED);
+                                gc.strokeOval(x, y, xSegmentLength, ySegmentLength);*/
+                                i += xSegmentLength;
+                                j += ySegmentLength;
+                            }
                         }
-
                     }
                 }
-                y += ySegmentLength;
-                if (ySegment + 1 == 9) {
-                    ySegmentLength += yMod10;
+                x += xSegmentLength;
+                if (xSegmentNum + 1 == 9) {
+                    xSegmentLength += xMod10;
                 }
             }
-            y = (int) imageBorders.getMinY();
-            ySegmentLength -= yMod10;
-            x += xSegmentLength;
+            x = (int) imageBorders.getMinX();
+            xSegmentLength -= xMod10;
+            y += ySegmentLength;
 
-            if (xSegment + 1 == 9) {
-                xSegmentLength += xMod10;
+            if (ySegmentNum + 1 == 9) {
+                ySegmentLength += yMod10;
             }
         }
-
+        /*System.out.println("Vector from image:");
+        for (int i = 0; i < trainingVector.length; i++) {
+            System.out.println(trainingVector[i]);
+        }
+*/
         return trainingVector;
     }
 
@@ -106,10 +114,9 @@ public final class ImageUtils {
         double x = letterArea.getMinX();
         double y = letterArea.getMinY();
 
-
         for (int i = 0; i < 10; i++) {
             for (int j = 0; j < 10; j++) {
-                gc.setStroke(Color.YELLOW);
+                gc.setStroke(Color.BLUE);
                 gc.strokeRect(x, y, xSegmentLength, ySegmentLength);
                 y += ySegmentLength;
                 if (j + 1 == 9) {

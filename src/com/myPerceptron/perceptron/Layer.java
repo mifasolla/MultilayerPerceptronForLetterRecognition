@@ -74,11 +74,14 @@ public class Layer {
         return last;
     } // tested
 
+    /**
+     * Set random weights in [-0.5; 0.5] range.
+     */
     private void setRandomWeights() {
         Random rand = new Random();
         for (int i = 0; i < weights.getRowCount(); i++) {
             for (int j = 0; j < weights.getColumnCount(); j++) {
-                weights.setElement(i, j, rand.nextDouble());
+               weights.setElement(i, j, -0.5 + rand.nextDouble());
             }
         }
     }

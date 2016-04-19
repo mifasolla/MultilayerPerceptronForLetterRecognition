@@ -3,10 +3,9 @@ package com.myPerceptron.algorithms;
 import com.myPerceptron.utils.AlertUtils;
 import com.myPerceptron.utils.ImageUtils;
 import com.myPerceptron.utils.Matrix;
-import javafx.geometry.Rectangle2D;
+import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Alert;
 import javafx.scene.image.Image;
-import javafx.scene.image.PixelReader;
 
 import java.io.File;
 import java.io.IOException;

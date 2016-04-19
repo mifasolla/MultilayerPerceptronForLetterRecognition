@@ -60,9 +60,6 @@
                               <Font name="Calibri" size="14.0" />
                            </font>
                         </Button>
-                        <Button layoutX="65.0" layoutY="107.0" mnemonicParsing="false" onAction="#onTestButtonClick" prefHeight="25.0" prefWidth="109.0" text="Test" />
-                        <Button layoutX="66.0" layoutY="284.0" mnemonicParsing="false" onAction="#onTestZh" prefHeight="25.0" prefWidth="109.0" text="Test Ж" />
-                        <Button layoutX="66.0" layoutY="244.0" mnemonicParsing="false" onAction="#onTestA" prefHeight="25.0" prefWidth="109.0" text="Test A" />
                      </children>
                   </AnchorPane>
             </content>

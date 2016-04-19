@@ -3,7 +3,9 @@ package com.myPerceptron.algorithms;
 import com.myPerceptron.perceptron.Layer;
 import com.myPerceptron.perceptron.Perceptron;
 import com.myPerceptron.utils.ActivationFunction;
+import com.myPerceptron.utils.AlertUtils;
 import com.myPerceptron.utils.Matrix;
+import javafx.scene.control.Alert;
 
 import java.util.Random;
 
@@ -11,7 +13,7 @@ import java.util.Random;
 
 public class BackPropagationAlgorithm {
 
-    private final double ALPHA = new Random().nextDouble() * (-1.0);
+    private final double ALPHA = new Random().nextDouble() * (-0.001);
     private final double ETA = 0.001;
 
     private Perceptron perceptron;
@@ -26,6 +28,7 @@ public class BackPropagationAlgorithm {
         int trainingVectorCount = (int) (trainingSampleSize * 0.8);
         int generalizationVectorCount = trainingSampleSize - trainingVectorCount;
         Matrix desiredResponseVector;
+        int target = 0;
 
         for (int epoch = 0; epoch < 500; epoch++) {
 
@@ -33,9 +36,9 @@ public class BackPropagationAlgorithm {
             desiredResponseVector = ts.getDesiredResponseVector();
 
             Matrix[] oldDeltaWeights = new Matrix[layersCount];
-            for(int i = 0; i < oldDeltaWeights.length; i++) {
+            for (int i = 0; i < oldDeltaWeights.length; i++) {
                 oldDeltaWeights[i] = new Matrix(perceptron.getLayers(i).getWeights().getRowCount(),
-                                perceptron.getLayers(i).getWeights().getColumnCount());
+                        perceptron.getLayers(i).getWeights().getColumnCount());
             }
 
             for (int trainingVectorNumber = 0; trainingVectorNumber < trainingVectorCount; trainingVectorNumber++) {
@@ -67,11 +70,13 @@ public class BackPropagationAlgorithm {
                     rightAnswer++;
                 }
             }
-            System.out.println("Epoch " + epoch + " = " + (double)rightAnswer / (double)generalizationVectorCount);
 
-            if ((double)rightAnswer / (double)generalizationVectorCount > 0.8) {
-                System.out.println("The perceptron is learned!!!");
-                epoch = 1000;
+            if ((double) rightAnswer / (double) generalizationVectorCount > 0.8) {
+                target++;
+                if (target > 50) {
+                    AlertUtils.showAlert("Perceptron is learned.", Alert.AlertType.INFORMATION);
+                    break;
+                }
             }
         }
     }
@@ -129,8 +134,8 @@ public class BackPropagationAlgorithm {
             }
         } else {
             for (int layerNum = 0; layerNum < oldDeltaWeights.length; layerNum++) {
-                oldDeltaWeights[layerNum].scalarMultiplicationInPlace(ALPHA);
-                newDeltaWeights[layerNum].addInPlace(oldDeltaWeights[layerNum]);
+                /*oldDeltaWeights[layerNum].scalarMultiplicationInPlace(ALPHA);
+                newDeltaWeights[layerNum].addInPlace(oldDeltaWeights[layerNum]);*/
 
                 Layer layer = perceptron.getLayers(layerNum);
                 Matrix newWeights = layer.getWeights();
