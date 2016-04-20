@@ -258,6 +258,25 @@ public class Matrix {
         System.out.println();
     }
 
+    @Override
+    public String toString() {
+        StringBuilder matrixString = new StringBuilder("");
+
+        for (int i = 0; i < matrix.length; i++) {
+            StringBuilder line = new StringBuilder("");
+            for (int j = 0; j < matrix[i].length - 1; j++) {
+                line.append(matrix[i][j] + " ");
+            }
+            line.append(matrix[i][matrix[i].length - 1]);
+            if (i < matrix.length - 1) {
+                matrixString.append(line + "\n");
+            } else {
+                matrixString.append(line);
+            }
+        }
+        return matrixString.toString();
+    }
+
 
     private void scalarMultiplicationTheColumnInPlace(double scalar, int columnNumber) {
         for (int i = 0; i < this.getRowCount(); i++) {

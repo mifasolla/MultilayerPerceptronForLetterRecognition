@@ -8,18 +8,18 @@
 
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="200.0" prefWidth="300.0" xmlns="http://javafx.com/javafx/8.0.65" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.myPerceptron.visualization.NewPerceptronCreationLayoutController">
    <children>
-      <Button layoutX="137.0" layoutY="159.0" mnemonicParsing="false" onAction="#handleCreate" prefHeight="25.0" prefWidth="70.0" text="Create">
+      <Button layoutX="137.0" layoutY="159.0" mnemonicParsing="false" onAction="#handleCreate" prefHeight="25.0" prefWidth="70.0" snapToPixel="false" text="Create">
          <font>
             <Font name="Calibri" size="14.0" />
          </font>
       </Button>
-      <Button layoutX="216.0" layoutY="159.0" mnemonicParsing="false" onAction="#handleCancel" prefHeight="25.0" prefWidth="70.0" text="Cancel">
+      <Button layoutX="216.0" layoutY="159.0" mnemonicParsing="false" onAction="#handleCancel" prefHeight="25.0" prefWidth="70.0" snapToPixel="false" text="Cancel">
          <font>
             <Font name="Calibri" size="14.0" />
          </font>
       </Button>
       <TextField fx:id="perceptronStructure" cacheShape="false" layoutX="66.0" layoutY="87.0" nodeOrientation="LEFT_TO_RIGHT" prefHeight="27.0" prefWidth="196.0" />
-      <Label layoutX="28.0" layoutY="52.0" text="Enter a perceptron structure:">
+      <Label layoutX="28.0" layoutY="52.0" text="Enter the perceptron structure:">
          <font>
             <Font name="Calibri" size="15.0" />
          </font>

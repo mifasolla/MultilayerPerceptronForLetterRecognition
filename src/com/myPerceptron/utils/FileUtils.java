@@ -1,5 +1,9 @@
 package com.myPerceptron.utils;
 
+import com.myPerceptron.MainApp;
+import javafx.stage.DirectoryChooser;
+import javafx.stage.FileChooser;
+
 import java.io.File;
 import java.io.FilenameFilter;
 
@@ -11,15 +15,20 @@ public final class FileUtils {
     private FileUtils() {
     }
 
-    public static File createImagesDir() {
-        File imagesDir = new File(".\\src\\com\\myPerceptron\\data\\images");
-        if (imagesDir.exists()) {
-            if (!imagesDir.isDirectory()) {
-                imagesDir.delete();
+    public static File createImagesDir(MainApp mainApp) {
+        DirectoryChooser directoryChooser = new DirectoryChooser();
+        File imagesDir = directoryChooser.showDialog(mainApp.getPrimaryStage());
+
+       // File imagesDir = new File(".\\src\\com\\myPerceptron\\data\\images");
+        if(imagesDir != null) {
+            if (imagesDir.exists()) {
+                if (!imagesDir.isDirectory()) {
+                    imagesDir.delete();
+                    imagesDir.mkdir();
+                }
+            } else {
                 imagesDir.mkdir();
             }
-        } else {
-            imagesDir.mkdir();
         }
 
         return imagesDir;

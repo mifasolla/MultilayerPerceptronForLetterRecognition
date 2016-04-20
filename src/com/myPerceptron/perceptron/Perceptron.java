@@ -4,9 +4,7 @@ import com.myPerceptron.utils.AlertUtils;
 import com.myPerceptron.utils.Matrix;
 import javafx.scene.control.Alert;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -59,6 +57,10 @@ public class Perceptron {
         createLayers(perceptronWeights);
         AlertUtils.showAlert("Perceptron is download", Alert.AlertType.INFORMATION);
         this.inputSignalLength = layers[0].getWeights().getColumnCount();
+
+    }
+
+    private Perceptron (Layer[] layers) {
 
     }
 
@@ -120,8 +122,16 @@ public class Perceptron {
         return layers[layerNumber];
     }
 
+    public void saveTo(File file) throws FileNotFoundException, UnsupportedEncodingException {
+        PrintWriter writer = new PrintWriter(file, "UTF-8");
+        for (int i = layers.length - 1; i >= 0; i--) {
+            writer.println("Layer number " + (i + 1) + ":");
+            writer.println(layers[i].getWeights().toString());
+        }
+        writer.close();
+    }
+
     /**
-     *
      * @param weightsInfo Txt file, where consists information about weights.
      *                    Matrices of weights in file are written in descending layer order, from last layer to first.
      * @return Array with matrices of layers weights in ascending layer order.

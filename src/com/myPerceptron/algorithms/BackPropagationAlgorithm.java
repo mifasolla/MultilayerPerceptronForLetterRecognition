@@ -7,6 +7,7 @@ import com.myPerceptron.utils.AlertUtils;
 import com.myPerceptron.utils.Matrix;
 import javafx.scene.control.Alert;
 
+import java.util.ArrayList;
 import java.util.Random;
 
  /* Created by Vika on 15.02.2016.*/
@@ -18,12 +19,16 @@ public class BackPropagationAlgorithm {
 
     private Perceptron perceptron;
     private TrainingSample ts;
+    private ArrayList<Double> generalizationError;
+    private ArrayList<Double> trainingError;
 
 
     public BackPropagationAlgorithm(Perceptron perceptron, TrainingSample ts) throws Exception {
         this.perceptron = perceptron;
         int layersCount = perceptron.getLayersCount();
         this.ts = ts;
+        generalizationError = new ArrayList<>();
+        trainingError = new ArrayList<>();
         int trainingSampleSize = ts.size();
         int trainingVectorCount = (int) (trainingSampleSize * 0.8);
         int generalizationVectorCount = trainingSampleSize - trainingVectorCount;
@@ -34,31 +39,27 @@ public class BackPropagationAlgorithm {
 
             ts.shuffle();
             desiredResponseVector = ts.getDesiredResponseVector();
-
-            Matrix[] oldDeltaWeights = new Matrix[layersCount];
-            for (int i = 0; i < oldDeltaWeights.length; i++) {
-                oldDeltaWeights[i] = new Matrix(perceptron.getLayers(i).getWeights().getRowCount(),
-                        perceptron.getLayers(i).getWeights().getColumnCount());
-            }
+            int trainingRightAnswersCount = 0;
 
             for (int trainingVectorNumber = 0; trainingVectorNumber < trainingVectorCount; trainingVectorNumber++) {
 
                 forwardComputation(trainingVectorNumber);
 
                 Layer lastLayer = perceptron.getLayers(layersCount - 1);
-                double errorSignal = desiredResponseVector.getElement(trainingVectorNumber, 0) - lastLayer.getNeuronOutputs().getElement(0, 0);
+                double response = lastLayer.getNeuronOutputs().getElement(0, 0);
+                if (getSign(response) == getSign(desiredResponseVector.getElement(trainingVectorNumber, 0))) {
+                    trainingRightAnswersCount++;
+                }
+
+                double errorSignal = desiredResponseVector.getElement(trainingVectorNumber, 0) - response;
 
                 Matrix[] localGradients = getLocalGradients(layersCount, errorSignal);
 
                 Matrix[] newDeltaWeights = calculateDeltaWeights(localGradients, trainingVectorNumber);
 
-                changeWeights(oldDeltaWeights, newDeltaWeights, trainingVectorNumber);
-
-                for (int i = 0; i < layersCount; i++) {
-                    oldDeltaWeights[i].setMatrix(newDeltaWeights[i]);
-                }
+                changeWeights(newDeltaWeights);
             }
-            int rightAnswer = 0;
+            int generalRightAnswersCount = 0;
 
             for (int generalVectorNum = trainingVectorCount; generalVectorNum < trainingSampleSize; generalVectorNum++) {
                 forwardComputation(generalVectorNum);
@@ -67,11 +68,14 @@ public class BackPropagationAlgorithm {
                 double response = lastLayer.getNeuronOutputs().getElement(0, 0);
 
                 if (getSign(response) == getSign(desiredResponseVector.getElement(generalVectorNum, 0))) {
-                    rightAnswer++;
+                    generalRightAnswersCount++;
                 }
             }
 
-            if ((double) rightAnswer / (double) generalizationVectorCount > 0.8) {
+            generalizationError.add(100.0 - ((double) generalRightAnswersCount / (double) generalizationVectorCount)*100.0);
+            trainingError.add(100.0 - ((double) trainingRightAnswersCount / (double) trainingVectorCount)*100.0);
+
+            if ((double) generalRightAnswersCount / (double) generalizationVectorCount > 0.8) {
                 target++;
                 if (target > 50) {
                     AlertUtils.showAlert("Perceptron is learned.", Alert.AlertType.INFORMATION);
@@ -79,6 +83,14 @@ public class BackPropagationAlgorithm {
                 }
             }
         }
+    }
+
+    public double[] getGeneralizationError() {
+        return convertToArray(generalizationError);
+    }
+
+    public double[] getTrainingError() {
+        return convertToArray(trainingError);
     }
 
     private void forwardComputation(int trainingVectorIndex) throws Exception {
@@ -122,27 +134,15 @@ public class BackPropagationAlgorithm {
         return activationFunctionDerivative;
     }
 
-    private void changeWeights(Matrix[] oldDeltaWeights, Matrix[] newDeltaWeights, int trainingVectorNumber)
+    private void changeWeights(Matrix[] newDeltaWeights)
             throws Exception {
 
-        if (trainingVectorNumber == 0) {
-            for (int layerNum = 0; layerNum < oldDeltaWeights.length; layerNum++) {
+            for (int layerNum = 0; layerNum < newDeltaWeights.length; layerNum++) {
                 Layer layer = perceptron.getLayers(layerNum);
                 Matrix newWeights = layer.getWeights();
                 newWeights.addInPlace(newDeltaWeights[layerNum]);
                 layer.setWeights(newWeights);
             }
-        } else {
-            for (int layerNum = 0; layerNum < oldDeltaWeights.length; layerNum++) {
-                /*oldDeltaWeights[layerNum].scalarMultiplicationInPlace(ALPHA);
-                newDeltaWeights[layerNum].addInPlace(oldDeltaWeights[layerNum]);*/
-
-                Layer layer = perceptron.getLayers(layerNum);
-                Matrix newWeights = layer.getWeights();
-                newWeights.addInPlace(newDeltaWeights[layerNum]);
-                layer.setWeights(newWeights);
-            }
-        }
     }
 
     private Matrix[] calculateDeltaWeights(Matrix[] localGradients, int trainingVectorNumber) throws Exception {
@@ -169,5 +169,14 @@ public class BackPropagationAlgorithm {
     private int getSign(double value) {
         if (value >= 0) return 1;
         else return -1;
+    }
+
+    private double[] convertToArray(ArrayList<Double> arrayList) {
+        double[] array = new double[arrayList.size()];
+
+        for (int i = 0; i < array.length; i++) {
+            array[i] = arrayList.get(i);
+        }
+        return array;
     }
 }

@@ -17,7 +17,10 @@ import javafx.scene.image.WritableImage;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 
 public class MainApp extends Application {
 
@@ -25,6 +28,9 @@ public class MainApp extends Application {
     private BorderPane openingLayout;
     private TrainingSample ts;
     private Perceptron perceptron;
+    private BackPropagationAlgorithm bpa;
+    private double[] generalizationError;
+    private double[] trainingError;
 
     public static void main(String[] args) {
         launch(args);
@@ -74,7 +80,9 @@ public class MainApp extends Application {
     }
 
     public void backPropagation() throws Exception {
-        new BackPropagationAlgorithm(perceptron, ts);
+        bpa = new BackPropagationAlgorithm(perceptron, ts);
+        generalizationError = bpa.getGeneralizationError();
+        trainingError = bpa.getTrainingError();
     }
 
     public double solve(WritableImage image) throws Exception {
@@ -103,5 +111,22 @@ public class MainApp extends Application {
             AlertUtils.showAlert("Input vector is null. Try another picture.", Alert.AlertType.INFORMATION);
             return -2;
         }
+    }
+
+    public void savePerceptron(File file) throws FileNotFoundException, UnsupportedEncodingException {
+        perceptron.saveTo(file);
+    }
+
+    public boolean hasNullPerceptron() {
+        if (perceptron == null) return true;
+        return false;
+    }
+
+    public double[] getGeneralizationError() {
+       return generalizationError;
+    }
+
+    public double[] getTrainingError() {
+       return trainingError;
     }
 }
