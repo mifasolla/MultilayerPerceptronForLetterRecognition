@@ -4,8 +4,8 @@ import com.myPerceptron.MainApp;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 
-import java.io.File;
-import java.io.FilenameFilter;
+import java.io.*;
+import java.util.Scanner;
 
 /**
  * Created by Vika on 10.03.2016.
@@ -15,23 +15,24 @@ public final class FileUtils {
     private FileUtils() {
     }
 
-    public static File createImagesDir(MainApp mainApp) {
+    public static File openDir(MainApp mainApp, String pathTo) throws FileNotFoundException, UnsupportedEncodingException {
         DirectoryChooser directoryChooser = new DirectoryChooser();
-        File imagesDir = directoryChooser.showDialog(mainApp.getPrimaryStage());
+        directoryChooser.setInitialDirectory(getDefaultPath(pathTo));
+        File dir = directoryChooser.showDialog(mainApp.getPrimaryStage());
 
-       // File imagesDir = new File(".\\src\\com\\myPerceptron\\data\\images");
-        if(imagesDir != null) {
-            if (imagesDir.exists()) {
-                if (!imagesDir.isDirectory()) {
-                    imagesDir.delete();
-                    imagesDir.mkdir();
+        if(dir != null) {
+            if (dir.exists()) {
+                if (!dir.isDirectory()) {
+                    dir.delete();
+                    dir.mkdir();
                 }
             } else {
-                imagesDir.mkdir();
+                dir.mkdir();
             }
         }
+        updatePathTo(dir, pathTo);
 
-        return imagesDir;
+        return dir;
     }
 
     public static FilenameFilter createFileNameFilter(final String filter) {
@@ -48,6 +49,58 @@ public final class FileUtils {
 
     public static File createPictureFile(File imagesDir, String picturePrefix, int pictureNumber) {
         return new File(imagesDir, picturePrefix + pictureNumber + ").png");
+    }
+
+    public static File openFile(MainApp mainApp, String pathTo, String extDescription, String extensionFilter) throws FileNotFoundException, UnsupportedEncodingException {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setInitialDirectory(getDefaultPath(pathTo));
+
+        FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter(extDescription, extensionFilter);
+        fileChooser.getExtensionFilters().add(extFilter);
+
+        File file = fileChooser.showOpenDialog(mainApp.getPrimaryStage());
+        updatePathTo(file, pathTo);
+
+        return file;
+    }
+
+    public static File saveFile(MainApp mainApp, String pathTo, String extDescription, String extensionFilter) throws FileNotFoundException, UnsupportedEncodingException {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setInitialDirectory(getDefaultPath(pathTo));
+
+        FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter(extDescription, extensionFilter);
+        fileChooser.getExtensionFilters().add(extFilter);
+
+        File file = fileChooser.showSaveDialog(mainApp.getPrimaryStage());
+        updatePathTo(file, pathTo);
+
+        return file;
+    }
+
+    private static File getDefaultPath(String pathTo) throws FileNotFoundException {
+        File cache = new File(pathTo);
+        Scanner cacheScan = new Scanner(cache);
+        String cachePath = "";
+        if (cacheScan.hasNext()) {
+            cachePath = cacheScan.next();
+            return new File(cachePath);
+        }
+        return null;
+    }
+
+    private static void updatePathTo(File chosenFile, String oldPathTo) throws FileNotFoundException {
+        if(chosenFile != null) {
+            File updateCache = new File(oldPathTo);
+            PrintWriter writer = new PrintWriter(updateCache);
+            String updatePath = chosenFile.getParent();
+            if (updatePath.contains("src\\")) {
+                updatePath = updatePath.substring(updatePath.indexOf("src\\"));
+            }
+            updatePath.replace("\\", "\\\\");
+
+            writer.println(updatePath);
+            writer.close();
+        }
     }
 
 }

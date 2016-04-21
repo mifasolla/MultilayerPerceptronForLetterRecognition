@@ -78,7 +78,6 @@ public class BackPropagationAlgorithm {
             if ((double) generalRightAnswersCount / (double) generalizationVectorCount > 0.8) {
                 target++;
                 if (target > 50) {
-                    AlertUtils.showAlert("Perceptron is learned.", Alert.AlertType.INFORMATION);
                     break;
                 }
             }

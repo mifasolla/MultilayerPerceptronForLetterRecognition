@@ -26,6 +26,7 @@ public class NewPerceptronCreationLayoutController {
     private ArrayList<Integer> neuronsCountInfo;
     private final int INPUT_LENGTH = 101;
     private final int LAST_LAYER_NEURONS_COUNT = 1;
+    private boolean ok = false;
 
     @FXML
     private void initialize() {
@@ -40,6 +41,7 @@ public class NewPerceptronCreationLayoutController {
             neuronsCountInfo = parsePerceptronStructure(structure);
 
             mainApp.setPerceptron(new Perceptron(INPUT_LENGTH, neuronsCountInfo));
+            ok = true;
             
             dialogStage.close();
         }
@@ -52,8 +54,13 @@ public class NewPerceptronCreationLayoutController {
     }
 
     public void setMainApp (MainApp mainApp) { this.mainApp = mainApp; }
+
     public void setDialogStage(Stage dialogStage) {
         this.dialogStage = dialogStage;
+    }
+
+    public boolean isOk() {
+        return ok;
     }
 
     private EventHandler<KeyEvent> validation() {

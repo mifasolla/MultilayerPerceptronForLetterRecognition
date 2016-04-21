@@ -19,20 +19,6 @@ public class Perceptron {
     private int inputSignalLength;
 
     public Perceptron(int inputSignalLength, ArrayList<Integer> neuronsCountInfo) throws IOException {
-
-        //  1. write to file input com.myPerc.algorithms.data from images
-
-       /* ArrayList<Double> inputSignalList = new ArrayList<Double>();
-        inputSignalList.add(1.0);*/
-
-        // 2. read from file input com.myPerc.algorithms.data and write it into arrayList
-        // 3. normalize the inputs
-        // 4. convert to array
-
-      /*inputSignal = transformListToDoubleArray(inputSignalList);*/
-
-        // 5. create layers by dint of user interaction?
-
         this.inputSignalLength = inputSignalLength;
         layersCount = neuronsCountInfo.size();
         layers = new Layer[layersCount];

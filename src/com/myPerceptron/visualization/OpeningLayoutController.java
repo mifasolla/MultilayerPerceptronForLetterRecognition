@@ -5,6 +5,8 @@ import com.myPerceptron.algorithms.TrainingSample;
 import com.myPerceptron.perceptron.Perceptron;
 import com.myPerceptron.utils.AlertUtils;
 import com.myPerceptron.utils.FileUtils;
+import javafx.beans.InvalidationListener;
+import javafx.beans.Observable;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -21,6 +23,7 @@ import javafx.scene.control.*;
 import javafx.scene.image.WritableImage;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.paint.Color;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
@@ -36,6 +39,9 @@ import java.util.logging.Logger;
  * Created by Vika on 22.02.2016.
  */
 public class OpeningLayoutController {
+
+    @FXML
+    private BorderPane borderP;
 
     @FXML
     private Canvas canvas;
@@ -54,6 +60,9 @@ public class OpeningLayoutController {
 
     @FXML
     private Button train;
+
+    @FXML
+    private Button showChartButton;
 
     @FXML
     private RadioButton letterV;
@@ -76,6 +85,9 @@ public class OpeningLayoutController {
     @FXML
     private TextField answer;
 
+    @FXML
+    private MenuItem savePerceptronAs;
+
     private GraphicsContext gc;
     private MainApp mainApp;
 
@@ -90,12 +102,25 @@ public class OpeningLayoutController {
 
     @FXML
     private void initialize() {
+        answer.setEditable(false);
         gc = canvas.getGraphicsContext2D();
         radioButtonsGroup = new ToggleGroup();
         letterV.setToggleGroup(radioButtonsGroup);
         letterZ.setToggleGroup(radioButtonsGroup);
 
-        drawCanvasBorder();
+        InvalidationListener listener = new InvalidationListener() {
+            @Override
+            public void invalidated(Observable o) {
+                drawCanvasBorder();
+            }
+        };
+        canvas.widthProperty().addListener(listener);
+        canvas.heightProperty().addListener(listener);
+
+        // Bind canvas size to stack pane size.
+        canvas.widthProperty().bind(borderP.widthProperty().subtract(290));
+        canvas.heightProperty().bind(borderP.heightProperty().subtract(70));
+
 
         // Clear away portions as the user drags the mouse
         canvas.addEventHandler(MouseEvent.MOUSE_DRAGGED, new EventHandler<MouseEvent>() {
@@ -104,6 +129,8 @@ public class OpeningLayoutController {
                 gc.fillOval(e.getX(), e.getY(), 13, 13);
             }
         });
+
+
     }
 
     @FXML
@@ -124,7 +151,7 @@ public class OpeningLayoutController {
     @FXML
     private void onSavePictureToButtonClick() {
         try {
-            imagesDir = FileUtils.createImagesDir(mainApp);
+            imagesDir = FileUtils.openDir(mainApp, ".\\src\\com\\myPerceptron\\data\\cache\\pathToImages.txt");
             if (imagesDir != null) {
                 savePicture(getPicture(), imagesDir);
             }
@@ -135,12 +162,9 @@ public class OpeningLayoutController {
 
     @FXML
     private void onConvertImagesToTrainingSampleClick() throws IOException {
-        DirectoryChooser directoryChooser = new DirectoryChooser();
-        File selectedDirectory = directoryChooser.showDialog(mainApp.getPrimaryStage());
+        File imagesDir = FileUtils.openDir(mainApp, ".\\src\\com\\myPerceptron\\data\\cache\\pathToImages.txt");
 
-        //imagesDir = new File(".\\src\\com\\myPerceptron\\data\\images");
-
-        mainApp.setTrainingSample(new TrainingSample(selectedDirectory));
+        mainApp.setTrainingSample(new TrainingSample(imagesDir));
         toLearningTab();
     }
 
@@ -151,35 +175,27 @@ public class OpeningLayoutController {
 
     @FXML
     private void handleNew() {
-        showNewPerceptronCreationLayout();
-        toTrainingTab();
+        if (showNewPerceptronCreationLayout()) {
+            toTrainingTab();
+        }
     }
 
     @FXML
-    private void handleOpenPerceptron() throws FileNotFoundException {
-        FileChooser fileChooser = new FileChooser();
-
-        FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("TXT files (*.txt)", "*.txt");
-        fileChooser.getExtensionFilters().add(extFilter);
-
-        File file = fileChooser.showOpenDialog(mainApp.getPrimaryStage());
+    private void handleOpenPerceptron() throws FileNotFoundException, UnsupportedEncodingException {
+        File file = FileUtils.openFile(mainApp, ".\\src\\com\\myPerceptron\\data\\cache\\pathToPerceptrons.txt",
+               "TXT files (*.txt)", "*.txt");
 
         if (file != null) {
             mainApp.setPerceptron(new Perceptron(file));
         }
         toRecognitionTab();
+        showChartButton.setDisable(true);
     }
 
     @FXML
     private void handleSavePerceptronAs() throws FileNotFoundException, UnsupportedEncodingException {
-        FileChooser fileChooser = new FileChooser();
-
-        // Set extension filter
-        FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter(
+        File file = FileUtils.saveFile(mainApp,".\\src\\com\\myPerceptron\\data\\cache\\pathToPerceptrons.txt",
                 "TXT files (*.txt)", "*.txt");
-        fileChooser.getExtensionFilters().add(extFilter);
-        // Show save file dialog
-        File file = fileChooser.showSaveDialog(mainApp.getPrimaryStage());
 
         if (file != null) {
             // Make sure it has the correct extension
@@ -198,6 +214,7 @@ public class OpeningLayoutController {
         if (generalizationError != null && trainingError != null) {
             showChartLayout(generalizationError, trainingError);
         }
+        savePerceptronAs.setDisable(false);
         toRecognitionTab();
     }
 
@@ -214,15 +231,10 @@ public class OpeningLayoutController {
     }
 
     @FXML
-    private void onAddPictures() {
-        toTrainingTab();
-        if (!mainApp.hasNullPerceptron()) {
-            recognitionTab.setDisable(false);
+    private void onShowChartOfErrorsClick() {
+        if (mainApp.getGeneralizationError() != null && mainApp.getTrainingError() != null) {
+            showChartLayout(mainApp.getGeneralizationError(), mainApp.getTrainingError());
         }
-        saveAPicture.setDisable(false);
-        saveAPictureTo.setDisable(false);
-        clear.setDisable(false);
-        loadTS.setDisable(true);
     }
 
     private void drawCanvasBorder() {
@@ -254,11 +266,28 @@ public class OpeningLayoutController {
         loadTS.requestFocus();
     }
 
+    private void allowAddingPictureTab() {
+        if (!mainApp.hasNullPerceptron()) {
+            recognitionTab.setDisable(false);
+        }
+        trainingTab.setDisable(false);
+        saveAPicture.setDisable(false);
+        saveAPictureTo.setDisable(false);
+        clear.setDisable(false);
+        loadTS.setDisable(true);
+    }
+
     private void toRecognitionTab() {
         learningTab.setDisable(true);
         recognitionTab.setDisable(false);
-        trainingTab.setDisable(true);
+        allowAddingPictureTab();
         tabPane.getSelectionModel().select(recognitionTab);
+
+        if (mainApp.getGeneralizationError() == null && mainApp.getTrainingError() == null) {
+            showChartButton.setDisable(true);
+        } else {
+            showChartButton.setDisable(false);
+        }
     }
 
     private WritableImage getPicture() {
@@ -271,7 +300,7 @@ public class OpeningLayoutController {
         return snapshot;
     }
 
-    private void showNewPerceptronCreationLayout() {
+    private boolean showNewPerceptronCreationLayout() {
 
         try {
             FXMLLoader loader = new FXMLLoader();
@@ -289,11 +318,13 @@ public class OpeningLayoutController {
             controller.setMainApp(mainApp);
             controller.setDialogStage(dialogStage);
 
-            dialogStage.showAndWait();
 
+            dialogStage.showAndWait();
+            return controller.isOk();
 
         } catch (IOException e) {
             e.printStackTrace();
+            return false;
         }
     }
 
