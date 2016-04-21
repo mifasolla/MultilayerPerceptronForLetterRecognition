@@ -32,19 +32,17 @@ public class MainApp extends Application {
     private double[] generalizationError;
     private double[] trainingError;
 
-    public static void main(String[] args) {
-        launch(args);
-    }
-
     @Override
     public void start(Stage primaryStage) {
         this.primaryStage = primaryStage;
         this.primaryStage.setTitle("Multilayer Perceptron");
+        this.primaryStage.setMinWidth(625);
+        this.primaryStage.setMinHeight(450);
 
         initOpeningLayout();
     }
 
-    public void initOpeningLayout() {
+    private void initOpeningLayout() {
         try {
             // Load root layout from fxml file.
             FXMLLoader loader = new FXMLLoader();
@@ -111,7 +109,7 @@ public class MainApp extends Application {
             AlertUtils.showAlert("Input vector is null. Try another picture.", Alert.AlertType.INFORMATION);
             return -2;
         }
-    }
+    } // for tests
 
     public void savePerceptron(File file) throws FileNotFoundException, UnsupportedEncodingException {
         perceptron.saveTo(file);

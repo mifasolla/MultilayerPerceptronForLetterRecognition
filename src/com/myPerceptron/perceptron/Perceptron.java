@@ -46,10 +46,6 @@ public class Perceptron {
 
     }
 
-    private Perceptron (Layer[] layers) {
-
-    }
-
     public void calculateOutputs(Matrix inputSignal) throws Exception {
         if (inputSignal.getColumnCount() != 1) {
             throw new RuntimeException("Illegal input signal dimensions. Input signal has " +
@@ -128,11 +124,10 @@ public class Perceptron {
         ArrayList<Matrix> perceptronWeights = new ArrayList<>();
         Scanner fileScanner = new Scanner(weightsInfo);
         fileScanner.useDelimiter("[/n]");
-        String line = "";
         ArrayList<String> infoLines = null;
 
         while (fileScanner.hasNextLine()) {
-            line = fileScanner.nextLine();
+            String line = fileScanner.nextLine();
             if (line.contains("Layer")) {
                 if (infoLines != null) {
                     Matrix weights = parseLines(infoLines);
@@ -141,6 +136,9 @@ public class Perceptron {
 
                 infoLines = new ArrayList<>();
                 line = fileScanner.nextLine();
+            }
+            if(infoLines == null) {
+                throw new NullPointerException("File is empty or illegal format!");
             }
             infoLines.add(line);
         }
@@ -156,20 +154,24 @@ public class Perceptron {
     }
 
     private Matrix parseLines(ArrayList<String> infoLines) {
-        int rowCount = infoLines.size();
-        String[] lineSplitArray = infoLines.get(0).split(" ");
-        int columnCount = lineSplitArray.length;
-        double[][] weights = new double[rowCount][columnCount];
+        if (infoLines != null) {
+            int rowCount = infoLines.size();
+            String[] lineSplitArray = infoLines.get(0).split(" ");
+            int columnCount = lineSplitArray.length;
+            double[][] weights = new double[rowCount][columnCount];
 
-        for (int i = 0; i < rowCount; i++) {
-            String[] lineSplit = infoLines.get(i).split(" ");
-            for (int j = 0; j < lineSplit.length; j++) {
-                lineSplit[j] = lineSplit[j].replace(',', '.');
-                weights[i][j] = Double.valueOf(lineSplit[j]);
+            for (int i = 0; i < rowCount; i++) {
+                String[] lineSplit = infoLines.get(i).split(" ");
+                for (int j = 0; j < lineSplit.length; j++) {
+                    lineSplit[j] = lineSplit[j].replace(',', '.');
+                    weights[i][j] = Double.valueOf(lineSplit[j]);
+                }
             }
-        }
 
-        return new Matrix(weights);
+            return new Matrix(weights);
+        } else {
+            return null;
+        }
     }
 
 }

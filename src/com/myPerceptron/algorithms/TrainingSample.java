@@ -3,7 +3,6 @@ package com.myPerceptron.algorithms;
 import com.myPerceptron.utils.AlertUtils;
 import com.myPerceptron.utils.ImageUtils;
 import com.myPerceptron.utils.Matrix;
-import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Alert;
 import javafx.scene.image.Image;
 
@@ -11,7 +10,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Random;
 
-//import java.awt.*;
 
 /**
  * Created by Vika on 15.02.2016.
@@ -38,7 +36,7 @@ public class TrainingSample {
 
         this.trainingSample = trainingSample;
         this.desiredResponseVector = desiredResponseVector;
-    }
+    } // for tests
 
     public Matrix getInputVector(int number) {
         return trainingSample.getVectorFromColumn(number);

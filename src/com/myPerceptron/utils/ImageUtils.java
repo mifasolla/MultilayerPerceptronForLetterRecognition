@@ -13,7 +13,7 @@ public final class ImageUtils {
     private ImageUtils() {
     }
 
-    public static Rectangle2D getLetterBorders(Image image) {
+    private static Rectangle2D getLetterBorders(Image image) {
         int left = Integer.MAX_VALUE;
         int right = Integer.MIN_VALUE;
         int top = Integer.MIN_VALUE;
@@ -76,8 +76,6 @@ public final class ImageUtils {
                             count++;
                             if(count > ((xSegmentLength*ySegmentLength)/10)) {
                                 trainingVector[ySegmentNum * 10 + xSegmentNum + 1] = 1; // + 1, потому что на 0-м месте всегда стоит 1, остальные координаты вектора нужно заполнять со сдвигом на один
-                                /*gc.setStroke(Color.RED);
-                                gc.strokeOval(x, y, xSegmentLength, ySegmentLength);*/
                                 i += xSegmentLength;
                                 j += ySegmentLength;
                             }
@@ -97,11 +95,6 @@ public final class ImageUtils {
                 ySegmentLength += yMod10;
             }
         }
-        /*System.out.println("Vector from image:");
-        for (int i = 0; i < trainingVector.length; i++) {
-            System.out.println(trainingVector[i]);
-        }
-*/
         return trainingVector;
     }
 

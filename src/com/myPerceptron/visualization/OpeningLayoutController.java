@@ -25,8 +25,6 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.paint.Color;
-import javafx.stage.DirectoryChooser;
-import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
@@ -341,7 +339,7 @@ public class OpeningLayoutController {
 
         //creating the chart
         final LineChart<Number, Number> lineChart =
-                new LineChart<Number, Number>(xAxis, yAxis);
+                new LineChart<>(xAxis, yAxis);
 
         lineChart.setTitle("Errors visualization");
         //defining a series

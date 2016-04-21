@@ -1,9 +1,6 @@
 package com.myPerceptron.utils;
 
 import javafx.scene.control.Alert;
-import javafx.scene.control.TextInputDialog;
-
-import java.util.Optional;
 
 /**
  * Created by Vika on 10.03.2016.
@@ -16,12 +13,11 @@ public final class AlertUtils {
     public static void showAlert(String contentText, Alert.AlertType type) {
         Alert alert = new Alert(type);
         alert.setTitle("Message");
-        //alert.setHeaderText("");
         alert.setContentText(contentText);
         alert.showAndWait();
     }
 
-    public static int showIntegerInputDialog(String title, String contentText) {
+    /*public static int showIntegerInputDialog(String title, String contentText) {
         TextInputDialog dialog = new TextInputDialog();
         dialog.setTitle(title);
         dialog.setHeaderText("Data input dialog");
@@ -45,5 +41,5 @@ public final class AlertUtils {
             showAlert("Please, enter a number", Alert.AlertType.WARNING);
             return showIntegerInputDialog(title, contentText);
         }
-    }
+    }*/
 }

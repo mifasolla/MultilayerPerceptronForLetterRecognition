@@ -80,10 +80,8 @@ public final class FileUtils {
     private static File getDefaultPath(String pathTo) throws FileNotFoundException {
         File cache = new File(pathTo);
         Scanner cacheScan = new Scanner(cache);
-        String cachePath = "";
         if (cacheScan.hasNext()) {
-            cachePath = cacheScan.next();
-            return new File(cachePath);
+            return new File(cacheScan.next());
         }
         return null;
     }

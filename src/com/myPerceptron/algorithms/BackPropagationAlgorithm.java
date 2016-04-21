@@ -3,18 +3,14 @@ package com.myPerceptron.algorithms;
 import com.myPerceptron.perceptron.Layer;
 import com.myPerceptron.perceptron.Perceptron;
 import com.myPerceptron.utils.ActivationFunction;
-import com.myPerceptron.utils.AlertUtils;
 import com.myPerceptron.utils.Matrix;
-import javafx.scene.control.Alert;
 
 import java.util.ArrayList;
-import java.util.Random;
 
  /* Created by Vika on 15.02.2016.*/
 
 public class BackPropagationAlgorithm {
 
-    private final double ALPHA = new Random().nextDouble() * (-0.001);
     private final double ETA = 0.001;
 
     private Perceptron perceptron;

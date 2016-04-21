@@ -14,9 +14,7 @@ public class Matrix {
     public Matrix(double[][] matrix) {
         this.matrix = new double[matrix.length][matrix[0].length];
         for (int i = 0; i < matrix.length; i++) {
-            for (int j = 0; j < matrix[i].length; j++) {
-                this.matrix[i][j] = matrix[i][j];
-            }
+            System.arraycopy(matrix[i], 0, this.matrix[i], 0, matrix[i].length);
         }
     }
 
@@ -32,9 +30,7 @@ public class Matrix {
         double[][] matrixCopy = new double[getRowCount()][getColumnCount()];
 
         for (int i = 0; i < matrixCopy.length; i++) {
-            for (int j = 0; j < matrixCopy[i].length; j++) {
-                matrixCopy[i][j] = matrix[i][j];
-            }
+            System.arraycopy(matrix[i], 0, matrixCopy[i], 0, matrix[i].length);
         }
 
         return matrixCopy;
@@ -105,9 +101,7 @@ public class Matrix {
         }
 
         for (int i = 0; i < getRowCount(); i++) {
-            for (int j = 0; j < getColumnCount(); j++) {
-                matrix[i][j] = other.matrix[i][j];
-            }
+            System.arraycopy(other.matrix[i], 0, matrix[i], 0, other.matrix[i].length);
         }
     } // tested
 
@@ -296,10 +290,7 @@ public class Matrix {
 
     private double[] getRow(int rowNumber) {
         double[] row = new double[this.getColumnCount()];
-
-        for (int j = 0; j < this.getColumnCount(); j++) {
-            row[j] = matrix[rowNumber][j];
-        }
+        System.arraycopy(matrix[rowNumber], 0, row, 0, matrix[rowNumber].length);
 
         return row;
     }

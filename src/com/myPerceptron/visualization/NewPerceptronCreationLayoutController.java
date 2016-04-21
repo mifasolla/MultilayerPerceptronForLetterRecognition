@@ -90,7 +90,7 @@ public class NewPerceptronCreationLayoutController {
     }
 
     private ArrayList<Integer> parsePerceptronStructure(String structure) {
-        ArrayList<Integer> neuronCountInfo = new ArrayList<Integer>();
+        ArrayList<Integer> neuronCountInfo = new ArrayList<>();
         int integerStart = 0;
 
         if (structure.charAt(structure.length() - 1) == '-') {

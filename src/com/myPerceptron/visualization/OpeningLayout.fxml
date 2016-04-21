@@ -16,7 +16,7 @@
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane fx:id="borderP" cacheShape="false" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" snapToPixel="false" style="-fx-background-color: #ffffff;" stylesheets="@css/openingLayout.css" xmlns="http://javafx.com/javafx/8.0.65" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.myPerceptron.visualization.OpeningLayoutController">
+<BorderPane fx:id="borderP" cacheShape="false" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="400.0" minWidth="600.0" prefHeight="400.0" prefWidth="600.0" snapToPixel="false" style="-fx-background-color: #ffffff;" stylesheets="@css/openingLayout.css" xmlns="http://javafx.com/javafx/8.0.65" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.myPerceptron.visualization.OpeningLayoutController">
    <top>
       <MenuBar prefHeight="25.0" prefWidth="600.0" snapToPixel="false" BorderPane.alignment="CENTER">
         <menus>
@@ -63,7 +63,7 @@
                               <Font name="Calibri" size="48.0" />
                            </font>
                         </TextField>
-                        <Button fx:id="showChartButton" layoutX="62.0" layoutY="253.0" mnemonicParsing="false" onAction="#onShowChartOfErrorsClick" prefHeight="60.0" prefWidth="115.0" text="Show chart of errors" textAlignment="CENTER" wrapText="true">
+                        <Button fx:id="showChartButton" layoutX="62.0" layoutY="253.0" mnemonicParsing="false" onAction="#onShowChartOfErrorsClick" prefHeight="60.0" prefWidth="115.0" text="Display error chart" textAlignment="CENTER" wrapText="true">
                            <font>
                               <Font name="Calibri" size="14.0" />
                            </font>

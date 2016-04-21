@@ -71,16 +71,6 @@ public class LayerTest {
     }
 
     @Test
-    public void testGetNeuronOutputs() throws Exception {
-// не уверенна пока, что сюда конкретно писать
-    }
-
-    @Test
-    public void testGetWeights() throws Exception {
-// и сюда тоже
-    }
-
-    @Test
     public void testIsLast() throws Exception {
         Layer layer = new Layer(5, 4, true);
         Layer other = new Layer(4, 5, false);
